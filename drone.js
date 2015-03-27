@@ -15,22 +15,25 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var Drone = function( params ){
     var config = {  
-                    port: params.port,
-                    server: params.server,
-                    reportPeriod: params.reportPeriod,
-                    cloudVarDecls: params.cloudVarDecls,
-                    name: params.name
-                  }
+        port: params.port,
+        server: params.server,
+        reportPeriod: params.reportPeriod,
+        cloudVarDecls: params.cloudVarDecls,
+        name: params.name
+    }
     this.start = function(){
         // initialize cloud variables
+        console.log(config.name + ' is Go');
 
         // update cloud variables 1/reportPeriod
     }
     this.stop = function(){
         // stop updating cloud variables
+        console.log(config.name + ' is Stop');
     }
     this.destroy = function(){
         // destroy drone
+        console.log(config.name + ' is No More');
     }
     this.getReport = function(){
         /* Return as Object:
@@ -42,5 +45,8 @@ var Drone = function( params ){
 
     }
 }
-
-module.exports = Drone;
+    // returns new drone object
+var createDrone = function( params ){
+        return new Drone( params );
+    }
+module.exports = createDrone;

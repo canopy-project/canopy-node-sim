@@ -6,31 +6,56 @@ var Drone = require('./Drone');
  * Methods: Init Drone, Destroy Drone, Configure update times, set variable 
  */
 var SimEngine = function( params ){
-    var config = {  port: params.port,
-                    server: params.server,
-                    numDrones: params.numDrones,
-                    delay: params.delay
-                  }
-
-    var createDrone = function(){
-        this.drone = new Drone( config )
+    var interval = null;
+    var drones = [];
+    var config = {
+      engineName: params.engineName,      
+      port: params.port,
+      server: params.server,
+      numDrones: params.numDrones,
+      delay: params.delay,
+      droneReportPeriod: params.droneReportPeriod
     }
-    var start = function(){
+
+    this.start = function(){
         // Every delay second, spin up a drone until numDrones is reached
-
+        var dronesCreated = 0;
+        interval = setInterval(function() {
+            if( dronesCreated > numDrones ){
+                clearInterval( interval );
+            } else   {
+                Drone.createDrone({
+                    port: config.port,
+                    server: config.server,
+                    reportPeriod: config.droneReportPeriod,
+                    cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
+                    name: config.engineName + dronesCreated
+                });
+                dronesCreated +=1;
+                drones.push()
+            }, config.delay*1000);
+        });
     }
-    var stop = function(){
+    this.stop = function(){
         // stop all drones 
+        clearInterval( interval );
+        for(var i=0;i<drones.length;i++){
+            drones[i].stop();
+        }
 
     }
-    var shutdown = function(){
+    this.shutdown = function(){
         // stop, clean-up, destroy drones
+        this.stop();
+        for(var i=0;i<drones.length;i++){
+            drones[i].delete();
+        }
     }
 
 }
 
 /*
- * Creates a simulatino engine Params has these fields:  createSimEngine params: port, server, numDrones, delay. Optional params: username, password
+ * Creates a simulation engine Params has these fields:  createSimEngine params: port, server, numDrones, delay. Optional params: username, password
         port - Port of Canopy server,
         server - host name of server,
         numDrones - number of drones to spin up,
@@ -40,5 +65,7 @@ var SimEngine = function( params ){
 */
 
 var createSimEngine = function( params ){
-    var simEngine = new SimEngine( params );
+    return new SimEngine( params );
 }
+
+module.exports = createSimEngine;
