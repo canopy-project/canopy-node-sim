@@ -21,18 +21,20 @@ var SimEngine = function( params ){
         // Every delay second, spin up a drone until numDrones is reached
         var dronesCreated = 0;
         interval = setInterval(function() {
-            if( dronesCreated > numDrones ){
+            if( dronesCreated > params.numDrones ){
                 clearInterval( interval );
             } else {
-                Drone.createDrone({
+                var currentDrone = Drone.createDrone({
                     port: config.port,
                     server: config.server,
                     reportPeriod: config.droneReportPeriod,
                     cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
                     name: config.engineName + dronesCreated
                 });
+                currentDrone.start();
                 dronesCreated +=1;
-                drones.push()
+                drones.push( currentDrone.name );
+
             };
         }, config.delay*1000);
     }

@@ -12,6 +12,7 @@ var engine = require('./engine');
 console.dir(engine);
 var simEngine = engine.createSimEngine( params );
 console.dir(simEngine);
+simEngine.start();
 
 process.on('SIGINT', function() {
   simEngine.shutdown();

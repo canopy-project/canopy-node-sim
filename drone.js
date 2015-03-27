@@ -46,4 +46,4 @@ var Drone = function( params ){
 var createDrone = function( params ){
         return new Drone( params );
     }
-module.exports = createDrone;
+module.exports.createDrone = createDrone;
