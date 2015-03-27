@@ -1,8 +1,5 @@
 'use strict'
 
-var TestUser = require('./testUser');
-var TestDevice = require('./testDevice');
-var http = require('http');
 var h = require('./helper-functions');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 /*  

@@ -1,6 +1,6 @@
 'use strict'
 var params = {
-    engineName: droneEngineAlpha,      
+    engineName: 'droneEngineAlpha',      
     port: 80,
     server: 'https://ccs.canopy.link',
     numDrones: 20,
@@ -9,8 +9,9 @@ var params = {
 }
 
 var engine = require('./engine');
-
+console.dir(engine);
 var simEngine = engine.createSimEngine( params );
+console.dir(simEngine);
 
 process.on('SIGINT', function() {
   simEngine.shutdown();

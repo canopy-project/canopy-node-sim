@@ -1,5 +1,5 @@
 'use strict'
-var Drone = require('./Drone');
+var Drone = require('./drone');
 /*
  * Manages a number of sim drones
  * Spins up sim drones 
@@ -23,7 +23,7 @@ var SimEngine = function( params ){
         interval = setInterval(function() {
             if( dronesCreated > numDrones ){
                 clearInterval( interval );
-            } else   {
+            } else {
                 Drone.createDrone({
                     port: config.port,
                     server: config.server,
@@ -33,8 +33,8 @@ var SimEngine = function( params ){
                 });
                 dronesCreated +=1;
                 drones.push()
-            }, config.delay*1000);
-        });
+            };
+        }, config.delay*1000);
     }
     this.stop = function(){
         // stop all drones 
@@ -51,7 +51,6 @@ var SimEngine = function( params ){
             drones[i].delete();
         }
     }
-
 }
 
 /*
@@ -68,4 +67,4 @@ var createSimEngine = function( params ){
     return new SimEngine( params );
 }
 
-module.exports = createSimEngine;
+module.exports.createSimEngine = createSimEngine;
