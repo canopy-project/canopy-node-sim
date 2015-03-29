@@ -1,5 +1,6 @@
 var https = require('https');
 var h = require('./helper-functions');
+var q = require('q');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var User = function(){
@@ -17,7 +18,8 @@ var User = function(){
     var loginPath = '/api/login';
     var selfPath = '/api/user/self';
 
-    self.register = function( callback ){ 
+    self.register = function( callback ){
+        var deferred = q.defer();
         console.log(host);
         var user = {
           'username': username,
@@ -61,8 +63,8 @@ var User = function(){
           console.log(e);
         });
         req.write( userString );
-        req.end();
-
+        req.end( deferred.resolve() );
+        return deferred.promise;
         if( callback ){
             callback();
         }
