@@ -11,7 +11,6 @@ var User = function(){
     var password = h.generatePassword();
     var host  = process.env.CANOPY_HOST;
     var sslPort = 443;
-    var cookie = null;
     var auth = h.generateAuthString( username, password );
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
