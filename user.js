@@ -19,7 +19,13 @@ var User = function(){
     var selfPath = '/api/user/self';
 
     self.register = function( callback ){
-        var deferred = q.defer();
+        var fireCallback = function(){
+            if( callback ){
+                console.log( '\n\ncallback ' );
+                console.dir( callback );
+                callback();
+            }          
+        }        
         console.log(host);
         var user = {
           'username': username,
@@ -56,21 +62,25 @@ var User = function(){
           res.on('end', function() {
             var resultObject = JSON.parse(responseString);
             console.log( resultObject );
-          });
+            fireCallback();
+          });        
         });
 
         req.on('error', function(e) {
           console.log(e);
         });
         req.write( userString );
-        req.end( deferred.resolve() );
-        return deferred.promise;
-        if( callback ){
-            callback();
-        }
+        req.end();
     }
 
     self.delete = function( callback ){
+        var fireCallback = function(){
+            if( callback ){
+                console.log( '\n\ncallback ' );
+                console.dir( callback );
+                callback();
+            }          
+        }       
         var skipEmail = {
           'skip-email': true
         };
@@ -104,6 +114,7 @@ var User = function(){
           res.on('end', function() {
             var resultObject = JSON.parse(responseString);
             console.log( resultObject );
+            fireCallback();
           });
         });
 
@@ -112,14 +123,16 @@ var User = function(){
         });
         req.write( skipEmailString );
         req.end();
-
-        if( callback ){
-            callback();
-        }      
     }
 
     self.createDevice = function( device, callback ){
-
+        var fireCallback = function(){
+            if( callback ){
+                console.log( '\n\ncallback ' );
+                console.dir( callback );
+                callback();
+            }          
+        } 
         var thisDevice = {
           'quantity': 1,
           'friendly_names' : h.generateDeviceFriendlyNames(1)
@@ -152,6 +165,7 @@ var User = function(){
           res.on('end', function() {
               var resultObject = JSON.parse( responseString );
               console.log( resultObject );
+              fireCallback();
           });
         });
 
@@ -159,11 +173,7 @@ var User = function(){
           console.log(e);
         });
         req.write( deviceString );
-        req.end();        
-
-        if( callback ){
-            callback();
-        }
+        req.end();
     }
 }
 
