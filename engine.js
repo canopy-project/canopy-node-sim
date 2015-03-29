@@ -33,11 +33,12 @@ var SimEngine = function( params ){
                 });
                 currentDrone.start();
                 dronesCreated +=1;
-                drones.push( currentDrone.name );
+                drones.push( currentDrone );
 
             };
         }, config.delay*1000);
     }
+
     this.stop = function(){
         // stop all drones 
         clearInterval( interval );
@@ -46,11 +47,12 @@ var SimEngine = function( params ){
         }
 
     }
+
     this.shutdown = function(){
         // stop, clean-up, destroy drones
         this.stop();
         for(var i=0;i<drones.length;i++){
-            drones[i].delete();
+            drones[i].destroy();
         }
     }
 }

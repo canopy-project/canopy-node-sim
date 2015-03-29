@@ -1,15 +1,22 @@
 'use strict'
+/*
+ * Instatiates and starts a Sim Engine.  Pressing ctrl+c on the command prompt
+ * will shut down the Sim Engine then exit the process
+ *
+ */
+
 var params = {
     engineName: 'droneEngineAlpha',      
     port: 80,
     server: 'https://ccs.canopy.link',
     numDrones: 20,
-    delay: 10,
+    delay: 1,
     droneReportPeriod: 1 
 }
 
 var engine = require('./engine');
 console.dir(engine);
+
 var simEngine = engine.createSimEngine( params );
 console.dir(simEngine);
 simEngine.start();

@@ -18,20 +18,24 @@ var Drone = function( params ){
         cloudVarDecls: params.cloudVarDecls,
         name: params.name
     }
+
     this.start = function(){
         // initialize cloud variables
         console.log(config.name + ' is Go');
 
         // update cloud variables 1/reportPeriod
     }
+
     this.stop = function(){
         // stop updating cloud variables
         console.log(config.name + ' is Stop');
     }
+
     this.destroy = function(){
         // destroy drone
         console.log(config.name + ' is No More');
     }
+
     this.getReport = function(){
         /* Return as Object:
                  name,
@@ -46,4 +50,5 @@ var Drone = function( params ){
 var createDrone = function( params ){
         return new Drone( params );
     }
+    
 module.exports.createDrone = createDrone;
