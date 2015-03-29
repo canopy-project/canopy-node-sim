@@ -10,7 +10,12 @@ var Test = function(){
     }
     
     that.createDevice = function(){
-         that.droneCaptain.createDevice();
+         that.droneCaptain.createDevice( {}, that.delete );
+    }
+
+    that.delete = function(){
+        console.log('deleting');
+        that.droneCaptain.delete();
     }
 }
 

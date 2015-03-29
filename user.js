@@ -15,6 +15,7 @@ var User = function(){
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
     var loginPath = '/api/login';
+    var selfPath = '/api/user/self';
 
     self.register = function( callback ){ 
         console.log(host);
@@ -65,7 +66,54 @@ var User = function(){
         if( callback ){
             callback();
         }
+    }
 
+    self.delete = function( callback ){
+        var skipEmail = {
+          'skip-email': true
+        };
+
+        var skipEmailString = JSON.stringify( skipEmail );
+
+        var headers = {
+          'Content-Type': 'application/json',
+          'Authorization' : auth,
+          'Content-Length': skipEmailString.length
+        };
+
+        var options = {
+          host: host,
+          port: sslPort,
+          path: selfPath,
+          method: 'DELETE',
+          headers: headers
+        };
+
+        var req = https.request(options, function(res) {
+          console.log(options);
+          res.setEncoding('utf-8');
+
+          var responseString = '';
+
+          res.on('data', function(data) {
+            responseString += data;
+          });
+
+          res.on('end', function() {
+            var resultObject = JSON.parse(responseString);
+            console.log( resultObject );
+          });
+        });
+
+        req.on('error', function(e) {
+          console.log(e);
+        });
+        req.write( skipEmailString );
+        req.end();
+
+        if( callback ){
+            callback();
+        }      
     }
 
     self.createDevice = function( device, callback ){
