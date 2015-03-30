@@ -115,15 +115,17 @@ var User = function( params ){
         req.end();
     }
 
-    self.createDrone = function( params, callback ){
+/*    self.createDrone = function( params, callback ){
+
         var myDrone = drone.createDrone( params );
         console.log('\n\nmyDrone: \n\n');
         console.dir( myDrone );
         console.log('\n\n');
-        return myDrone;
-    }
+        return drone.createDrone(params);
+    }*/
 
-    self.createDevice = function( device, callback ){
+    self.createDrone = function( device, callback ){
+
         var fireCallback = function(){
             if( callback ){
                 callback();
@@ -163,8 +165,11 @@ var User = function( params ){
               var resultObject = JSON.parse( responseString );
               var UUID = resultObject.devices[0].device_id;
               var secretKey = resultObject.devices[0].device_secret_key;
-             
-              self.createDrone({
+          
+          // Return a drone using the device's auth credentials
+          // and config data
+
+              return drone.createDrone({
                   port: device.port,
                   host: device.host,
                   reportPeriod: device.reportPeriod,
@@ -177,8 +182,6 @@ var User = function( params ){
                     'Authorization' : h.generateAuthString( UUID, secretKey )
                   }
               });
-
-              fireCallback();
           });
         });
 

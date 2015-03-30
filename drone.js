@@ -10,7 +10,6 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 // Drone Methods : initialize it with server, port, paths, variables
 
 var Drone = function( params ){
-/*    console.log('\n\nDrone initializing');*/
     var self = this;
     var config = {  
         port: params.port,
@@ -32,7 +31,7 @@ var Drone = function( params ){
     self.secretKey = config.secretKey;
     self.auth = config.auth;
     self.headers = config.headers;
-
+    console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
         // initialize cloud variables
         console.log(config.friendlyName + ' is Go');

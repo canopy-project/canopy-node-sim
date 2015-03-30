@@ -32,7 +32,7 @@ var SimEngine = function( params ){
             if( dronesCreated > config.numDrones ){
                 clearInterval( interval );
             } else {
-                var currentDrone = self.user.createDevice({
+                var currentDrone = self.user.createDrone({
                     port: config.port,
                     host: config.host,
                     reportPeriod: config.droneReportPeriod,
@@ -62,7 +62,7 @@ var SimEngine = function( params ){
     this.shutdown = function(){
         // stop, clean-up, destroy drones
         this.stop();
-        this.user.delete();
+        self.user.delete();
         for(var i=0;i<drones.length;i++){
             drones[i].destroy();
         }
