@@ -1,6 +1,6 @@
 var https = require('https');
 var h = require('./helper-functions');
-var q = require('q');
+var drone = require('./drone');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var User = function(){
@@ -20,12 +20,9 @@ var User = function(){
     self.register = function( callback ){
         var fireCallback = function(){
             if( callback ){
-                console.log( '\n\ncallback ' );
-                console.dir( callback );
                 callback();
             }          
         }        
-        console.log(host);
         var user = {
           'username': username,
           'email': email,
@@ -49,7 +46,6 @@ var User = function(){
         };
 
         var req = https.request(options, function(res) {
-          console.log(options);
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -60,7 +56,6 @@ var User = function(){
 
           res.on('end', function() {
             var resultObject = JSON.parse(responseString);
-            console.log( resultObject );
             fireCallback();
           });        
         });
@@ -75,8 +70,6 @@ var User = function(){
     self.delete = function( callback ){
         var fireCallback = function(){
             if( callback ){
-                console.log( '\n\ncallback ' );
-                console.dir( callback );
                 callback();
             }          
         }       
@@ -101,7 +94,6 @@ var User = function(){
         };
 
         var req = https.request(options, function(res) {
-          console.log(options);
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -112,7 +104,6 @@ var User = function(){
 
           res.on('end', function() {
             var resultObject = JSON.parse(responseString);
-            console.log( resultObject );
             fireCallback();
           });
         });
@@ -124,11 +115,13 @@ var User = function(){
         req.end();
     }
 
+    self.createDrone = function( params, callback ){
+        drone.createDrone( params );
+    }
+
     self.createDevice = function( device, callback ){
         var fireCallback = function(){
             if( callback ){
-                console.log( '\n\ncallback ' );
-                console.dir( callback );
                 callback();
             }          
         } 
@@ -164,6 +157,25 @@ var User = function(){
           res.on('end', function() {
               var resultObject = JSON.parse( responseString );
               console.log( resultObject );
+              var UUID = resultObject.devices[0].device_id;
+              var secretKey = resultObject.devices[0].device_secret_key;
+              console.log( 'UUID '+ UUID);
+              console.log( 'secretKey ' + secretKey);
+
+              self.createDrone({
+                  port: sslPort,
+                  server: host,
+                  reportPeriod: 1,
+                  cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
+                  friendlyName: h.generateDeviceFriendlyNames(1),
+                  UUID: UUID,
+                  secretKey: secretKey,
+                  headers: {
+                    'Content-Type' : 'application/json',
+                    'Authorization' : h.generateAuthString( UUID, secretKey )
+                  }
+              });
+
               fireCallback();
           });
         });

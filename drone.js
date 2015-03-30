@@ -3,8 +3,7 @@
 var h = require('./helper-functions');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 /*  
- *  Drone registers a test user, creates a device,
- *  initializes its cloud variables, then sets it
+ *  Initializes cloud variables, then sets it
  *  to post updates to the the variables 1/min.
  */
 
@@ -16,7 +15,9 @@ var Drone = function( params ){
         server: params.server,
         reportPeriod: params.reportPeriod,
         cloudVarDecls: params.cloudVarDecls,
-        name: params.name
+        friendlyName: params.name,
+        auth: params.auth,
+        headers: params.headers
     }
 
     this.start = function(){

@@ -1,11 +1,14 @@
 'use strict'
 var Drone = require('./drone');
+var User = require('./user');
 /*
  * Manages a number of sim drones
- * Spins up sim drones 
+ * Creates a User
+ * Spins up sim drones using that User's account 
  * Methods: Init Drone, Destroy Drone, Configure update times, set variable 
  */
 var SimEngine = function( params ){
+    var user = new User( params );
     var interval = null;
     var drones = [];
     var config = {
@@ -24,12 +27,12 @@ var SimEngine = function( params ){
             if( dronesCreated > params.numDrones ){
                 clearInterval( interval );
             } else {
-                var currentDrone = Drone.createDrone({
+                var currentDrone = user.createDrone({
                     port: config.port,
                     server: config.server,
                     reportPeriod: config.droneReportPeriod,
                     cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-                    name: config.engineName + dronesCreated
+                    friendlyName: config.engineName + dronesCreated,
                 });
                 currentDrone.start();
                 dronesCreated +=1;

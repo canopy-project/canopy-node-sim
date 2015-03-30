@@ -1,13 +1,10 @@
-'use strict'
-var q = require('q');
 var user = require('./user');
-
 var Test = function(){
     var that = this;
     that.droneCaptain = new user();
     that.register = function(){
         console.log('registering');
-        that.droneCaptain.register( that.createDevice );
+        that.droneCaptain.register(that.createDevice );
     }
     
     that.createDevice = function(){
