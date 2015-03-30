@@ -116,7 +116,9 @@ var User = function(){
     }
 
     self.createDrone = function( params, callback ){
-        drone.createDrone( params );
+        var myDrone = drone.createDrone( params );
+        console.dir( myDrone );
+        return myDrone;
     }
 
     self.createDevice = function( device, callback ){
@@ -167,7 +169,7 @@ var User = function(){
                   server: host,
                   reportPeriod: 1,
                   cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-                  friendlyName: h.generateDeviceFriendlyNames(1),
+                  friendlyName: thisDevice.friendly_names,
                   UUID: UUID,
                   secretKey: secretKey,
                   headers: {
