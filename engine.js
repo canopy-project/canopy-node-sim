@@ -1,6 +1,7 @@
 'use strict'
 var Drone = require('./drone');
 var User = require('./user');
+var q = require('q');
 /*
  * Manages a number of sim drones
  * Creates a User
@@ -17,12 +18,28 @@ var SimEngine = function( params ){
     var interval = null;
     var drones = [];
     var config = {
-      engineName: params.engineName,      
-      port: params.port,
-      host: params.host,
-      numDrones: params.numDrones,
-      delay: params.delay,
-      droneReportPeriod: params.droneReportPeriod
+        engineName: params.engineName,      
+        port: params.port,
+        host: params.host,
+        numDrones: params.numDrones,
+        delay: params.delay,
+        droneReportPeriod: params.droneReportPeriod
+    }
+
+    self.spinUpDrone = function( friendlyName, callback ){
+        var self = this;
+        var deferred = q.defer();
+        var headers = self.user.createDevice({friendlyName: friendlyName});
+        var currentDrone = Drone.createDrone({
+            port: config.port,
+            host: config.host,
+            reportPeriod: config.droneReportPeriod,
+            cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
+            friendlyName: friendlyName,
+            headers: headers
+        });
+        deferred.resolve( currentDrone );
+        return( deferred.promise );
     }
 
     self.start = function(){
@@ -32,21 +49,14 @@ var SimEngine = function( params ){
             if( dronesCreated > config.numDrones ){
                 clearInterval( interval );
             } else {
-                var currentDrone = self.user.createDrone({
-                    port: config.port,
-                    host: config.host,
-                    reportPeriod: config.droneReportPeriod,
-                    cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-                    friendlyName: config.engineName + dronesCreated
+                self.spinUpDrone( 
+                    config.engineName + dronesCreated
+                ).then(function( drone ){
+                    drone.start();
                 });
-                console.log('\n\ncurrentDrone: \n\n');
-                console.dir( currentDrone );
-                console.log('\n\n');
-                //currentDrone.start();
                 dronesCreated +=1;
-                drones.push( currentDrone );
 
-            };
+            }
         }, config.delay*1000);
     }
 
@@ -59,7 +69,7 @@ var SimEngine = function( params ){
 
     }
 
-    this.shutdown = function(){
+    self.shutdown = function(){
         // stop, clean-up, destroy drones
         this.stop();
         self.user.delete();

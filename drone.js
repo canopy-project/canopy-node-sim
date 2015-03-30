@@ -17,9 +17,6 @@ var Drone = function( params ){
         reportPeriod: params.reportPeriod,
         cloudVarDecls: params.cloudVarDecls,
         friendlyName: params.friendlyName,
-        UUID: params.UUID,
-        secretKey: params.secretKey,
-        auth: params.auth,
         headers: params.headers
     }
     self.port = config.port;
@@ -27,9 +24,6 @@ var Drone = function( params ){
     self.reportPeriod = config.reportPeriod;
     self.cloudVarDecls = config.cloudVarDecls;
     self.friendlyName = config.friendlyName;
-    self.UUID = config.UUID;
-    self.secretKey = config.secretKey;
-    self.auth = config.auth;
     self.headers = config.headers;
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){

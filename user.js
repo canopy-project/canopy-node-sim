@@ -1,6 +1,7 @@
 var https = require('https');
 var h = require('./helper-functions');
 var drone = require('./drone');
+var q = require('q');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var User = function( params ){
@@ -124,7 +125,7 @@ var User = function( params ){
         return drone.createDrone(params);
     }*/
 
-    self.createDrone = function( device, callback ){
+    self.createDevice = function( device, callback ){
 
         var fireCallback = function(){
             if( callback ){
@@ -165,23 +166,11 @@ var User = function( params ){
               var resultObject = JSON.parse( responseString );
               var UUID = resultObject.devices[0].device_id;
               var secretKey = resultObject.devices[0].device_secret_key;
-          
-          // Return a drone using the device's auth credentials
-          // and config data
-
-              return drone.createDrone({
-                  port: device.port,
-                  host: device.host,
-                  reportPeriod: device.reportPeriod,
-                  cloudVarDecls: device.cloudVarDecls,
-                  friendlyName: device.friendlyName,
-                  UUID: UUID,
-                  secretKey: secretKey,
-                  headers: {
+              var headers = {
                     'Content-Type' : 'application/json',
                     'Authorization' : h.generateAuthString( UUID, secretKey )
                   }
-              });
+              return headers;
           });
         });
 
