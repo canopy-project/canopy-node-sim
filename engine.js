@@ -53,6 +53,7 @@ var SimEngine = function( params ){
                     config.engineName + dronesCreated
                 ).then(function( drone ){
                     drone.start();
+                    drones.push( drone );
                 });
                 dronesCreated +=1;
 
@@ -71,7 +72,7 @@ var SimEngine = function( params ){
 
     self.shutdown = function(){
         // stop, clean-up, destroy drones
-        this.stop();
+        self.stop();
         self.user.delete();
         for(var i=0;i<drones.length;i++){
             drones[i].destroy();

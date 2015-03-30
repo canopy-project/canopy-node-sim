@@ -69,6 +69,7 @@ var User = function( params ){
     }
 
     self.delete = function( callback ){
+        console.log( 'deleting user' );
         var fireCallback = function(){
             if( callback ){
                 callback();
