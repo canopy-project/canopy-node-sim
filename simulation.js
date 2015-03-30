@@ -4,11 +4,12 @@
  * will shut down the Sim Engine then exit the process
  *
  */
+var h = require('./helper-functions');
 
 var params = {
-    engineName: 'droneEngineAlpha',      
-    port: 80,
-    server: 'https://ccs.canopy.link',
+    engineName: 'engine-' + h.generateRandomString() + '-',      
+    port: 443,
+    host: 'ccs.canopy.link',
     numDrones: 20,
     delay: 1,
     droneReportPeriod: 1 

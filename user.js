@@ -3,14 +3,14 @@ var h = require('./helper-functions');
 var drone = require('./drone');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
-var User = function(){
+var User = function( params ){
     
     var self = this;
     var username = h.generateUsername();
     var email = h.generateEmail();
     var password = h.generatePassword();
-    var host  = process.env.CANOPY_HOST;
-    var sslPort = 443;
+    var host  = params.host;
+    var sslPort = params.port;
     var auth = h.generateAuthString( username, password );
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
@@ -117,7 +117,9 @@ var User = function(){
 
     self.createDrone = function( params, callback ){
         var myDrone = drone.createDrone( params );
+        console.log('\n\nmyDrone: \n\n');
         console.dir( myDrone );
+        console.log('\n\n');
         return myDrone;
     }
 
@@ -127,9 +129,10 @@ var User = function(){
                 callback();
             }          
         } 
+
         var thisDevice = {
           'quantity': 1,
-          'friendly_names' : h.generateDeviceFriendlyNames(1)
+          'friendly_names' : [device.friendlyName]
         };
 
         var deviceString = JSON.stringify( thisDevice );
@@ -158,18 +161,15 @@ var User = function(){
 
           res.on('end', function() {
               var resultObject = JSON.parse( responseString );
-              console.log( resultObject );
               var UUID = resultObject.devices[0].device_id;
               var secretKey = resultObject.devices[0].device_secret_key;
-              console.log( 'UUID '+ UUID);
-              console.log( 'secretKey ' + secretKey);
-
+             
               self.createDrone({
-                  port: sslPort,
-                  server: host,
-                  reportPeriod: 1,
-                  cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-                  friendlyName: thisDevice.friendly_names,
+                  port: device.port,
+                  host: device.host,
+                  reportPeriod: device.reportPeriod,
+                  cloudVarDecls: device.cloudVarDecls,
+                  friendlyName: device.friendlyName,
                   UUID: UUID,
                   secretKey: secretKey,
                   headers: {

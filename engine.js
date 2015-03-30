@@ -8,33 +8,41 @@ var User = require('./user');
  * Methods: Init Drone, Destroy Drone, Configure update times, set variable 
  */
 var SimEngine = function( params ){
-    var user = new User( params );
+    var self = this;
+    self.user = new User( params );
+    self.user.register();
+    console.log('\n\n\nuser:\n\n ');
+    console.dir(self.user);
+
     var interval = null;
     var drones = [];
     var config = {
       engineName: params.engineName,      
       port: params.port,
-      server: params.server,
+      host: params.host,
       numDrones: params.numDrones,
       delay: params.delay,
       droneReportPeriod: params.droneReportPeriod
     }
 
-    this.start = function(){
+    self.start = function(){
         // Every delay second, spin up a drone until numDrones is reached
         var dronesCreated = 0;
         interval = setInterval(function() {
-            if( dronesCreated > params.numDrones ){
+            if( dronesCreated > config.numDrones ){
                 clearInterval( interval );
             } else {
-                var currentDrone = user.createDrone({
+                var currentDrone = self.user.createDevice({
                     port: config.port,
-                    server: config.server,
+                    host: config.host,
                     reportPeriod: config.droneReportPeriod,
                     cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-                    friendlyName: config.engineName + dronesCreated,
+                    friendlyName: config.engineName + dronesCreated
                 });
-                currentDrone.start();
+                console.log('\n\ncurrentDrone: \n\n');
+                console.dir( currentDrone );
+                console.log('\n\n');
+                //currentDrone.start();
                 dronesCreated +=1;
                 drones.push( currentDrone );
 
@@ -42,7 +50,7 @@ var SimEngine = function( params ){
         }, config.delay*1000);
     }
 
-    this.stop = function(){
+    self.stop = function(){
         // stop all drones 
         clearInterval( interval );
         for(var i=0;i<drones.length;i++){
@@ -54,6 +62,7 @@ var SimEngine = function( params ){
     this.shutdown = function(){
         // stop, clean-up, destroy drones
         this.stop();
+        this.user.delete();
         for(var i=0;i<drones.length;i++){
             drones[i].destroy();
         }

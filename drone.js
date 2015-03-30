@@ -10,34 +10,47 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 // Drone Methods : initialize it with server, port, paths, variables
 
 var Drone = function( params ){
+/*    console.log('\n\nDrone initializing');*/
+    var self = this;
     var config = {  
         port: params.port,
-        server: params.server,
+        host: params.host,
         reportPeriod: params.reportPeriod,
         cloudVarDecls: params.cloudVarDecls,
-        friendlyName: params.name,
+        friendlyName: params.friendlyName,
+        UUID: params.UUID,
+        secretKey: params.secretKey,
         auth: params.auth,
         headers: params.headers
     }
+    self.port = config.port;
+    self.host = config.host;
+    self.reportPeriod = config.reportPeriod;
+    self.cloudVarDecls = config.cloudVarDecls;
+    self.friendlyName = config.friendlyName;
+    self.UUID = config.UUID;
+    self.secretKey = config.secretKey;
+    self.auth = config.auth;
+    self.headers = config.headers;
 
-    this.start = function(){
+    self.start = function(){
         // initialize cloud variables
-        console.log(config.name + ' is Go');
+        console.log(config.friendlyName + ' is Go');
 
         // update cloud variables 1/reportPeriod
     }
 
-    this.stop = function(){
+    self.stop = function(){
         // stop updating cloud variables
-        console.log(config.name + ' is Stop');
+        console.log(config.friendlyName + ' is Stop');
     }
 
-    this.destroy = function(){
+    self.destroy = function(){
         // destroy drone
-        console.log(config.name + ' is No More');
+        console.log(config.friendlyName + ' is No More');
     }
 
-    this.getReport = function(){
+    self.getReport = function(){
         /* Return as Object:
                  name,
                  updates performed,
