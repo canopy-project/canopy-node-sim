@@ -126,6 +126,33 @@ var Drone = function( params ){
 
     self.destroy = function(){
         // destroy drone
+        var options = {
+            host: self.host,
+            port: self.port,
+            path: self.selfPath,
+            method: 'DELETE',
+            headers: self.headers
+        };
+
+        var req = https.request(options, function(res) {
+            res.setEncoding('utf-8');
+
+            var responseString = '';
+
+            res.on('data', function(data) {
+                responseString += data;
+            });
+
+            res.on('end', function() {
+                var resultObject = JSON.parse(responseString);
+                console.log( responseString );
+            });
+        });
+
+        req.on('error', function(e) {
+            console.log(e);
+        });
+        req.end();        
         console.log( config.friendlyName + ' is No More' );
     }
 

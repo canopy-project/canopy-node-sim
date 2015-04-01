@@ -8,5 +8,5 @@ export CANOPY_HOST="myhost.com"
 
 # Test a User
 ```
-node userTest.js
+node simulation.js
 ```
