@@ -31,9 +31,14 @@ var generateDeviceFriendlyNames = function( quantity ){
     return friendlyNames;
 }
 
+var generateInt = function(min, max) {
+  return Math.floor(Math.random() * (max - min)) + min;
+}
+
 module.exports.generateRandomString = generateRandomString;
 module.exports.generateUsername = generateUsername;
 module.exports.generateEmail = generateEmail;
 module.exports.generatePassword = generatePassword;
 module.exports.generateAuthString = generateAuthString;
 module.exports.generateDeviceFriendlyNames = generateDeviceFriendlyNames;
+module.exports.generateInt = generateInt;

@@ -81,9 +81,9 @@ var Drone = function( params ){
         interval = setInterval( function(){               
                 var payloadString = JSON.stringify({      
                     "vars" : {
-                        "temperature" : 65,
-                        "humidity" : 32,
-                        "dimmer_brightness" : 99
+                        "temperature" : h.generateInt(-25,140),
+                        "humidity" : h.generateInt(0,100),
+                        "dimmer_brightness" : h.generateInt(0,10)
                     }
                 });
 
