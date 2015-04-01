@@ -29,9 +29,10 @@ var Drone = function( params ){
     self.friendlyName = config.friendlyName;
     self.headers = config.headers;
     self.UUID = config.UUID;
-    self.selfPath = '/api/' + self.UUID
+    self.selfPath = '/api/' + self.UUID;
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
+        console.log('selfPath: ' + self.selfPath );
         // initialize cloud variables
         console.log( config.friendlyName + ' is Go' );
         // update cloud variables 1/reportPeriod
