@@ -30,6 +30,9 @@ var Drone = function( params ){
     self.headers = config.headers;
     self.UUID = config.UUID;
     self.selfPath = '/api/device/' + self.UUID;
+
+    var interval = null;
+
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
         console.log('selfPath: ' + self.selfPath );
@@ -61,26 +64,69 @@ var Drone = function( params ){
             res.on('end', function() {
                 var resultObject = JSON.parse(responseString);
                 console.log( responseString );
-            });        
+                self.update();
+            });
         });
 
         req.on('error', function(e) {
             console.log(e);
         });
         req.write( payloadString );
-        req.end();        
+        req.end();
     }
+
     self.update = function(){
         console.log( config.friendlyName + ' is updating cloud variables' );
+
+        interval = setInterval( function(){               
+                var payloadString = JSON.stringify({      
+                    "vars" : {
+                        "temperature" : 65,
+                        "humidity" : 32,
+                        "dimmer_brightness" : 99
+                    }
+                });
+
+                var options = {
+                    host: self.host,
+                    port: self.port,
+                    path: self.selfPath,
+                    method: 'POST',
+                    headers: self.headers
+                };
+
+                var req = https.request(options, function(res) {
+                    res.setEncoding('utf-8');
+
+                    var responseString = '';
+
+                    res.on('data', function(data) {
+                        responseString += data;
+                    });
+
+                    res.on('end', function() {
+                        var resultObject = JSON.parse(responseString);
+                        console.log( responseString );
+                    });
+                });
+
+                req.on('error', function(e) {
+                    console.log(e);
+                });
+                req.write( payloadString );
+                req.end();        
+        }, 1000 );
     }
+
     self.stop = function(){
         // stop updating cloud variables
-        console.log(config.friendlyName + ' is Stop');
+        console.log( config.friendlyName + ' is Stop' );
+        clearInterval( interval );
     }
 
     self.destroy = function(){
         // destroy drone
-        console.log(config.friendlyName + ' is No More');
+        console.log( config.friendlyName + ' is No More' );
     }
 
     self.getReport = function(){

@@ -39,7 +39,7 @@ var SimEngine = function( params ){
                     "var_decls" : {
                         "out float32 temperature": {},
                         "out float32 humidity": {},
-                        "out bool daytime": {}
+                        "out float32 dimmer_brightness": {}  
                     }
                 },
                 friendlyName: data.friendlyName,
