@@ -124,7 +124,8 @@ var User = function( params ){
         }
     }
     self.createDevice = function( device, callback ){
-	var deferred = q.defer();
+
+	      var deferred = q.defer();
         var returnObj = { };
         var fireCallback = function(){
             if( callback ){
@@ -181,7 +182,6 @@ var User = function( params ){
         });
         req.write( deviceString );
         req.end();
-        // this is returning before 'end' fires
 	return deferred.promise;
     }
 }

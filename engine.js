@@ -51,6 +51,7 @@ var SimEngine = function( params ){
     }
     self.logData = function( data ){
         var deferred = q.defer();
+        console.log('\n***\nEngine has received drone init data: \n***\n');
         console.log( data );
         deferred.resolve( data );
         return deferred.promise;
@@ -73,7 +74,7 @@ var SimEngine = function( params ){
                 self.getCreds( config.engineName + dronesCreated )
                     .then( self.logData )
                     .then( self.spinUpDrone )
-                    .then( self.startDrone )
+                    .then( self.startDrone )               
                     .done()
                 dronesCreated +=1;
             }
