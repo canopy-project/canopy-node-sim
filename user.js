@@ -12,7 +12,7 @@ var User = function( params ){
     var password = h.generatePassword();
     var host  = params.host;
     var sslPort = params.port;
-    var auth = h.generateAuthString( username, password );
+    self.auth = h.generateAuthString( username, password );
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
     var loginPath = '/api/login';
@@ -83,7 +83,7 @@ var User = function( params ){
 
         var headers = {
           'Content-Type': 'application/json',
-          'Authorization' : auth,
+          'Authorization' : self.auth,
           'Content-Length': skipEmailString.length
         };
 
@@ -117,17 +117,15 @@ var User = function( params ){
         req.end();
     }
 
-/*    self.createDrone = function( params, callback ){
-
-        var myDrone = drone.createDrone( params );
-        console.log('\n\nmyDrone: \n\n');
-        console.dir( myDrone );
-        console.log('\n\n');
-        return drone.createDrone(params);
-    }*/
-
+    self.getMockCreds = function(){
+        return { 
+            UUID: '123705h1hf042',
+            Authorization: 'r2j790sdf689g0sd6'
+        }
+    }
     self.createDevice = function( device, callback ){
-
+	var deferred = q.defer();
+        var returnObj = { };
         var fireCallback = function(){
             if( callback ){
                 callback();
@@ -143,7 +141,7 @@ var User = function( params ){
 
         var headers = {
           'Content-Type' : 'application/json',
-          'Authorization' : auth
+          'Authorization' : self.auth
         };
 
         var options = {
@@ -167,19 +165,24 @@ var User = function( params ){
               var resultObject = JSON.parse( responseString );
               var UUID = resultObject.devices[0].device_id;
               var secretKey = resultObject.devices[0].device_secret_key;
-              var headers = {
+              var auth = h.generateAuthString( UUID, secretKey );
+              returnObj.headers = {
                     'Content-Type' : 'application/json',
-                    'Authorization' : h.generateAuthString( UUID, secretKey )
+                    'Authorization' : auth
                   }
-              return headers;
+	            returnObj.UUID = UUID;
+              returnObj.friendlyName = device.friendlyName;
+              deferred.resolve( returnObj );        
           });
-        });
+    });
 
         req.on('error', function(e) {
           console.log(e);
         });
         req.write( deviceString );
         req.end();
+        // this is returning before 'end' fires
+	return deferred.promise;
     }
 }
 

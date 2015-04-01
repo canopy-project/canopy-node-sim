@@ -2,12 +2,14 @@
 var Drone = require('./drone');
 var User = require('./user');
 var q = require('q');
+
 /*
  * Manages a number of sim drones
  * Creates a User
  * Spins up sim drones using that User's account 
  * Methods: Init Drone, Destroy Drone, Configure update times, set variable 
  */
+
 var SimEngine = function( params ){
     var self = this;
     self.user = new User( params );
@@ -26,37 +28,54 @@ var SimEngine = function( params ){
         droneReportPeriod: params.droneReportPeriod
     }
 
-    self.spinUpDrone = function( friendlyName, callback ){
-        var self = this;
+    self.spinUpDrone = function( data ){
         var deferred = q.defer();
-        var headers = self.user.createDevice({friendlyName: friendlyName});
-        var currentDrone = Drone.createDrone({
-            port: config.port,
-            host: config.host,
-            reportPeriod: config.droneReportPeriod,
-            cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
-            friendlyName: friendlyName,
-            headers: headers
-        });
-        deferred.resolve( currentDrone );
-        return( deferred.promise );
+        deferred.resolve( 
+            Drone.createDrone({
+                port: config.port,
+                host: config.host,
+                reportPeriod: config.droneReportPeriod,
+                cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
+                friendlyName: data.friendlyName,
+                headers: data.headers,
+                UUID: data.UUID
+            })
+        )
+        return deferred.promise;
     }
 
+    self.getCreds = function( friendlyName ){
+        var deferred = q.defer();
+        deferred.resolve(self.user.createDevice({ friendlyName : friendlyName }));
+        return deferred.promise;
+    }
+    self.logData = function( data ){
+        var deferred = q.defer();
+        console.log( data );
+        deferred.resolve( data );
+        return deferred.promise;
+    }
+    self.startDrone = function( drone ){
+        drone.start();
+        drones.push( drone );
+    }
     self.start = function(){
         // Every delay second, spin up a drone until numDrones is reached
+        // First, create a device with the User and return the credentials
+        // needed to spin up a drone.
+        // Then, spin up a drone and start it
+
         var dronesCreated = 0;
         interval = setInterval(function() {
             if( dronesCreated > config.numDrones ){
                 clearInterval( interval );
             } else {
-                self.spinUpDrone( 
-                    config.engineName + dronesCreated
-                ).then(function( drone ){
-                    drone.start();
-                    drones.push( drone );
-                });
+                self.getCreds( config.engineName + dronesCreated )
+                    .then( self.logData )
+                    .then( self.spinUpDrone )
+                    .then( self.startDrone )
+                    .done()
                 dronesCreated +=1;
-
             }
         }, config.delay*1000);
     }
