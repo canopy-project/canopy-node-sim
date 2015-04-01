@@ -29,7 +29,7 @@ var Drone = function( params ){
     self.friendlyName = config.friendlyName;
     self.headers = config.headers;
     self.UUID = config.UUID;
-    self.selfPath = '/api/' + self.UUID;
+    self.selfPath = '/api/device/' + self.UUID;
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
         console.log('selfPath: ' + self.selfPath );
@@ -37,6 +37,7 @@ var Drone = function( params ){
         console.log( config.friendlyName + ' is Go' );
         // update cloud variables 1/reportPeriod
         var payload = self.cloudVarDecls;
+        console.log( 'payload: ' + payload );
 
         var payloadString = JSON.stringify( payload );
 
@@ -69,7 +70,9 @@ var Drone = function( params ){
         req.write( payloadString );
         req.end();        
     }
-
+    self.update = function(){
+        console.log( config.friendlyName + ' is updating cloud variables' );
+    }
     self.stop = function(){
         // stop updating cloud variables
         console.log(config.friendlyName + ' is Stop');

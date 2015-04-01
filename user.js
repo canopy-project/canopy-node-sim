@@ -182,7 +182,7 @@ var User = function( params ){
         });
         req.write( deviceString );
         req.end();
-	return deferred.promise;
+	   return deferred.promise;
     }
 }
 

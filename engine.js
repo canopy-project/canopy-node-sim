@@ -35,7 +35,13 @@ var SimEngine = function( params ){
                 port: config.port,
                 host: config.host,
                 reportPeriod: config.droneReportPeriod,
-                cloudVarDecls: ['out float32 temperature', 'out float32 humidity', 'out bool daytime'],
+                cloudVarDecls: {
+                    "var_decls" : {
+                        "out float32 temperature": {},
+                        "out float32 humidity": {},
+                        "out bool daytime": {}
+                    }
+                },
                 friendlyName: data.friendlyName,
                 headers: data.headers,
                 UUID: data.UUID
