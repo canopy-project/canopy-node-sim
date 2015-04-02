@@ -114,7 +114,8 @@ var Drone = function( params ){
                     console.log(e);
                 });
                 req.write( payloadString );
-                req.end();        
+                req.end();   
+                console.log( config.friendlyName + ' updated' );                     
         }, 1000 );
     }
 
