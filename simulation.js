@@ -5,14 +5,17 @@
  *
  */
 var h = require('./helper-functions');
+var http = require('http');
+var https = require('https');
 
 var params = {
     engineName: 'engine-' + h.generateRandomString() + '-',      
     port: 80,
     host: 'dev03.canopy.link',
-    numDrones: 10,
-    delay: 3,
-    droneReportPeriod: 3
+    protocol: http,
+    numDrones: 4,
+    delay: .1,
+    droneReportPeriod: 1
 }
 
 var engine = require('./engine');

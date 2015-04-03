@@ -1,8 +1,7 @@
 'use strict'
 
 var h = require('./helper-functions');
-var http = require('http');
-/*process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";*/
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 /*  
  *  Initializes cloud variables, then sets it
  *  to post updates to the the variables 1/min.
@@ -19,28 +18,33 @@ var Drone = function( params ){
         cloudVarDecls: params.cloudVarDecls,
         friendlyName: params.friendlyName,
         headers: params.headers,
-        UUID: params.UUID
+        UUID: params.UUID,
+        engine: params.engine,
+        protocol: params.protocol
     }
     self.port = config.port;
     self.host = config.host;
+    var protocol = config.protocol;
     self.reportPeriod = config.reportPeriod;
     self.cloudVarDecls = config.cloudVarDecls;
     self.friendlyName = config.friendlyName;
     self.headers = config.headers;
     self.UUID = config.UUID;
+    self.engine = config.engine;
     self.reportPeriod = config.reportPeriod;
     self.selfPath = '/api/device/' + self.UUID;
-
     var interval = null;
+
 
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
-        console.log('selfPath: ' + self.selfPath );
+        console.log( 'protocol: ' + protocol);
+        // console.log('selfPath: ' + self.selfPath );
         // initialize cloud variables
         console.log( config.friendlyName + ' is Go' );
         // update cloud variables 1/reportPeriod
         var payload = self.cloudVarDecls;
-        console.log( 'payload: ' + payload );
+       // console.log( 'payload: ' + payload );
 
         var payloadString = JSON.stringify( payload );
 
@@ -52,7 +56,7 @@ var Drone = function( params ){
             headers: self.headers
         };
 
-        var req = http.request(options, function(res) {
+        var req = protocol.request(options, function(res) {
             res.setEncoding('utf-8');
 
             var responseString = '';
@@ -63,7 +67,7 @@ var Drone = function( params ){
 
             res.on('end', function() {
                 var resultObject = JSON.parse(responseString);
-                console.log( responseString );
+               // console.log( responseString );
                 self.update();
             });
         });
@@ -76,8 +80,11 @@ var Drone = function( params ){
     }
 
     self.update = function(){
-        console.log( config.friendlyName + ' is updating cloud variables' );
+       // console.log( config.friendlyName + ' is updating cloud variables' );
 
+        var startTime;
+        var endTime;
+        var responseTime;
         interval = setInterval( function(){               
                 var payloadString = JSON.stringify({      
                     "vars" : {
@@ -95,7 +102,7 @@ var Drone = function( params ){
                     headers: self.headers
                 };
 
-                var req = http.request(options, function(res) {
+                var req = protocol.request(options, function(res) {
                     res.setEncoding('utf-8');
 
                     var responseString = '';
@@ -106,16 +113,22 @@ var Drone = function( params ){
 
                     res.on('end', function() {
                         var resultObject = JSON.parse(responseString);
-                        console.log( responseString );
+                       // console.log( responseString );
+                       endTime = h.getHighResClock();
+
+                       responseTime = endTime - startTime;
+                       console.log( responseTime );
+                       self.engine.addProfileData( 0, responseTime );
                     });
                 });
 
                 req.on('error', function(e) {
                     console.log(e);
                 });
+                startTime = h.getHighResClock();
                 req.write( payloadString );
                 req.end();   
-                console.log( config.friendlyName + ' updated' );                     
+                // console.log( config.friendlyName + ' updated' );                     
         }, self.reportPeriod*1000 );
     }
 
@@ -124,7 +137,6 @@ var Drone = function( params ){
         console.log( config.friendlyName + ' is Stop' );
         clearInterval( interval );
     }
-
     self.destroy = function(){
         // destroy drone
         var options = {
@@ -135,7 +147,7 @@ var Drone = function( params ){
             headers: self.headers
         };
 
-        var req = http.request(options, function(res) {
+        var req = protocol.request(options, function(res) {
             res.setEncoding('utf-8');
 
             var responseString = '';
@@ -146,7 +158,7 @@ var Drone = function( params ){
 
             res.on('end', function() {
                 var resultObject = JSON.parse(responseString);
-                console.log( responseString );
+               // console.log( responseString );
             });
         });
 

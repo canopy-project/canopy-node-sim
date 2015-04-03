@@ -1,8 +1,7 @@
-var http = require('http');
 var h = require('./helper-functions');
 var drone = require('./drone');
 var q = require('q');
-/*process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";*/
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var User = function( params ){
     
@@ -12,12 +11,12 @@ var User = function( params ){
     var password = h.generatePassword();
     var host  = params.host;
     var port = params.port;
+    var protocol = params.protocol;
     self.auth = h.generateAuthString( username, password );
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
     var loginPath = '/api/login';
     var selfPath = '/api/user/self';
-
     self.register = function( callback ){
         var fireCallback = function(){
             if( callback ){
@@ -46,7 +45,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = http.request(options, function(res) {
+        var req = protocol.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -95,7 +94,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = http.request(options, function(res) {
+        var req = protocol.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -153,7 +152,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = http.request(options, function(res) {
+        var req = protocol.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';

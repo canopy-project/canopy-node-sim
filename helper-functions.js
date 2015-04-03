@@ -35,6 +35,16 @@ var generateInt = function(min, max) {
   return Math.floor(Math.random() * (max - min)) + min;
 }
 
+/*
+ *  Returns a performance counter as a float in seconds with nanosecond precision.
+ *  This is a non-absolute time - Only use for relative calculations
+ */
+
+var getHighResClock = function(){
+    var hrTime = process.hrtime();
+    return hrTime[0] + hrTime[1]/1000000000;
+}
+
 module.exports.generateRandomString = generateRandomString;
 module.exports.generateUsername = generateUsername;
 module.exports.generateEmail = generateEmail;
@@ -42,3 +52,4 @@ module.exports.generatePassword = generatePassword;
 module.exports.generateAuthString = generateAuthString;
 module.exports.generateDeviceFriendlyNames = generateDeviceFriendlyNames;
 module.exports.generateInt = generateInt;
+module.exports.getHighResClock = getHighResClock;

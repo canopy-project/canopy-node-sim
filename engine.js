@@ -19,13 +19,44 @@ var SimEngine = function( params ){
 
     var interval = null;
     var drones = [];
+    self.dronesCreated = 0;    
     var config = {
         engineName: params.engineName,      
         port: params.port,
         host: params.host,
+        protocol: params.protocol,
         numDrones: params.numDrones,
         delay: params.delay,
-        droneReportPeriod: params.droneReportPeriod
+        droneReportPeriod: params.droneReportPeriod 
+    }
+    var protocol = config.protocol;
+
+    /*
+     *  Latency in seconds keyed on number of 
+     *  alive drones. 
+     */
+
+    self.responseAvgLatency = [];
+    self.responseMinLatency = [];
+    self.responseMaxLatency = [];
+
+    self.actualReportPeriod = {};
+    self.addProfileData = function( reportPeriod, latency ){
+        if ( self.responseMinLatency[ self.dronesCreated ] === undefined ){
+            self.responseMinLatency[ self.dronesCreated ] = latency;
+        } else {
+            self.responseMinLatency[ self.dronesCreated ] = Math.min( latency, self.responseMinLatency[ self.dronesCreated ] );
+        }
+        if ( self.responseMaxLatency[ self.dronesCreated ] === undefined ){
+            self.responseMaxLatency[ self.dronesCreated ] = latency;
+        } else {
+            self.responseMaxLatency[ self.dronesCreated ] = Math.max( latency, self.responseMaxLatency[ self.dronesCreated ] );
+        }
+    };
+    self.dumpReport = function(){
+        for(var i=0;i<self.dronesCreated;i++){
+            console.log( i +', ' + self.responseMinLatency[i] + ', ' + self.responseMaxLatency[i]);
+        }
     }
 
     self.spinUpDrone = function( data ){
@@ -44,7 +75,9 @@ var SimEngine = function( params ){
                 },
                 friendlyName: data.friendlyName,
                 headers: data.headers,
-                UUID: data.UUID
+                UUID: data.UUID,
+                engine: self,
+                protocol: config.protocol
             })
         )
         return deferred.promise;
@@ -58,7 +91,7 @@ var SimEngine = function( params ){
     self.logData = function( data ){
         var deferred = q.defer();
         console.log('\n***\nEngine has received drone init data: \n***\n');
-        console.log( data );
+       // console.log( data );
         deferred.resolve( data );
         return deferred.promise;
     }
@@ -72,17 +105,17 @@ var SimEngine = function( params ){
         // needed to spin up a drone.
         // Then, spin up a drone and start it
 
-        var dronesCreated = 0;
+
         interval = setInterval(function() {
-            if( dronesCreated > config.numDrones ){
+            if( self.dronesCreated > config.numDrones ){
                 clearInterval( interval );
             } else {
-                self.getCreds( config.engineName + dronesCreated )
+                self.getCreds( config.engineName + self.dronesCreated )
                     .then( self.logData )
                     .then( self.spinUpDrone )
                     .then( self.startDrone )               
                     .done()
-                dronesCreated +=1;
+                self.dronesCreated +=1;
             }
         }, config.delay*1000);
     }
@@ -100,6 +133,7 @@ var SimEngine = function( params ){
         // stop, clean-up, destroy drones
         self.stop();
         self.user.delete();
+        self.dumpReport();
         for(var i=0;i<drones.length;i++){
             drones[i].destroy();
         }
