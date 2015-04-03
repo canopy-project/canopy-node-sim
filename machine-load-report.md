@@ -1,3 +1,21 @@
+Results 2015-05-03
+------------------------------------------------------------------------------------------------
+Host: http://dev03.canopy.link (Cisco)
+Instance Type: GP2-Large | 8GB RAM | 2 VCPU | 50.0GB Disk
+Behind Apache Proxy: 
+500 drones reporting 1/sec
+
+TX:             cum:   19.8MB   peak:    218kb                                    rates:    183kb   195kb   194kb
+RX:                    9.34MB           99.7kb                                             94.3kb  94.3kb  94.2kb
+TOTAL:                 29.1MB            314kb                                              277kb   289kb   288kb
+
+load average: 0.20, 0.18, 0.20
+
+root      20   0  537588  12376   5412 S  12.9  0.2   4:42.68 canopy-server       
+root      20   0 3446232 473792  38668 S  10.9  5.8   4:19.76 java      
+
+Results 2015-05-01
+------------------------------------------------------------------------------------------------
 1) I changed the spin up delay to .1 and left the report
 delay at 1 and ran a test of 1000 machines, everything spun up and reported beautifully.
 
