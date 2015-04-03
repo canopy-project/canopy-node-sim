@@ -10,8 +10,8 @@ var params = {
     engineName: 'engine-' + h.generateRandomString() + '-',      
     port: 80,
     host: 'dev03.canopy.link',
-    numDrones: 1,
-    delay: 1,
+    numDrones: 10,
+    delay: 2,
     droneReportPeriod: 1 
 }
 

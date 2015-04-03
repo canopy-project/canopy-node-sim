@@ -1,7 +1,8 @@
-var https = require('https');
+var http = require('http');
 var h = require('./helper-functions');
 var drone = require('./drone');
 var q = require('q');
+/*process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";*/
 
 var User = function( params ){
     
@@ -45,7 +46,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = https.request(options, function(res) {
+        var req = http.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -94,7 +95,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = https.request(options, function(res) {
+        var req = http.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';
@@ -152,7 +153,7 @@ var User = function( params ){
           headers: headers
         };
 
-        var req = https.request(options, function(res) {
+        var req = http.request(options, function(res) {
           res.setEncoding('utf-8');
 
           var responseString = '';

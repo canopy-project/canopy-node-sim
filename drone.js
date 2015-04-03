@@ -1,9 +1,8 @@
 'use strict'
 
 var h = require('./helper-functions');
-var https = require('https');
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
-
+var http = require('http');
+/*process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";*/
 /*  
  *  Initializes cloud variables, then sets it
  *  to post updates to the the variables 1/min.
@@ -29,6 +28,7 @@ var Drone = function( params ){
     self.friendlyName = config.friendlyName;
     self.headers = config.headers;
     self.UUID = config.UUID;
+    self.reportPeriod = config.reportPeriod;
     self.selfPath = '/api/device/' + self.UUID;
 
     var interval = null;
@@ -52,7 +52,7 @@ var Drone = function( params ){
             headers: self.headers
         };
 
-        var req = https.request(options, function(res) {
+        var req = http.request(options, function(res) {
             res.setEncoding('utf-8');
 
             var responseString = '';
@@ -95,7 +95,7 @@ var Drone = function( params ){
                     headers: self.headers
                 };
 
-                var req = https.request(options, function(res) {
+                var req = http.request(options, function(res) {
                     res.setEncoding('utf-8');
 
                     var responseString = '';
@@ -116,7 +116,7 @@ var Drone = function( params ){
                 req.write( payloadString );
                 req.end();   
                 console.log( config.friendlyName + ' updated' );                     
-        }, 1000 );
+        }, self.reportPeriod*1000 );
     }
 
     self.stop = function(){
@@ -135,7 +135,7 @@ var Drone = function( params ){
             headers: self.headers
         };
 
-        var req = https.request(options, function(res) {
+        var req = http.request(options, function(res) {
             res.setEncoding('utf-8');
 
             var responseString = '';
