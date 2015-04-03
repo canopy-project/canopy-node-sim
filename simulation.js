@@ -8,10 +8,10 @@ var h = require('./helper-functions');
 
 var params = {
     engineName: 'engine-' + h.generateRandomString() + '-',      
-    port: 443,
-    host: 'ccs.canopy.link',
-    numDrones: 500,
-    delay: .1,
+    port: 80,
+    host: 'dev03.canopy.link',
+    numDrones: 1,
+    delay: 1,
     droneReportPeriod: 1 
 }
 

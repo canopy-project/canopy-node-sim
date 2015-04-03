@@ -2,7 +2,6 @@ var https = require('https');
 var h = require('./helper-functions');
 var drone = require('./drone');
 var q = require('q');
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var User = function( params ){
     
@@ -11,7 +10,7 @@ var User = function( params ){
     var email = h.generateEmail();
     var password = h.generatePassword();
     var host  = params.host;
-    var sslPort = params.port;
+    var port = params.port;
     self.auth = h.generateAuthString( username, password );
     var createUserPath = '/api/create_user';
     var createDevicePath = '/api/create_devices';
@@ -40,7 +39,7 @@ var User = function( params ){
 
         var options = {
           host: host,
-          port: sslPort,
+          port: port,
           path: createUserPath,
           method: 'POST',
           headers: headers
@@ -89,7 +88,7 @@ var User = function( params ){
 
         var options = {
           host: host,
-          port: sslPort,
+          port: port,
           path: selfPath,
           method: 'DELETE',
           headers: headers
@@ -147,7 +146,7 @@ var User = function( params ){
 
         var options = {
           host: host,
-          port: sslPort,
+          port: port,
           path: createDevicePath,
           method: 'POST',
           headers: headers
