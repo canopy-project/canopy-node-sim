@@ -11,8 +11,8 @@ var params = {
     port: 80,
     host: 'dev03.canopy.link',
     numDrones: 10,
-    delay: 2,
-    droneReportPeriod: 1 
+    delay: 3,
+    droneReportPeriod: 3
 }
 
 var engine = require('./engine');

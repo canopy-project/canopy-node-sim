@@ -5,7 +5,7 @@ var generateRandomString = function(){
 }
 
 var generateUsername = function(){
-    return  'Drone-Commander-' + Math.floor( Math.random()*100000 );
+    return  'DroneCommander' + Math.floor( Math.random()*100000 );
 }
 
 var generateEmail = function(){
