@@ -17,11 +17,11 @@ if ( cluster.isMaster ){
 } else {
     var params = {
         engineName: 'engine-' + h.generateRandomString() + '-',      
-        port: 443,
-        host: 'ccs.canopy.link',
-        protocol: https,
+        port: 80,
+        host: 'dev03.canopy.link',
+        protocol: http,
         numDrones: 10,
-        delay: 1,
+        delay: .5,
         droneReportPeriod: 1
     }
 

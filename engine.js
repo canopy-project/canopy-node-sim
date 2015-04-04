@@ -84,7 +84,7 @@ var SimEngine = function( params ){
 
     self.dumpReport = function(){
         for(var i=0;i<self.dronesCreated;i++){
-            console.log( i +', ' + h.round3Decimals( self.responseMinLatency[i] )
+            console.log( (i+1) +', ' + h.round3Decimals( self.responseMinLatency[i] )
                  + ', ' + h.round3Decimals( self.responseMaxLatency[i] )
                  + ', ' + h.round3Decimals( self.responseAvgLatency[i] )
                  + ', ' + h.round3Decimals( self.avgReportPeriod[i] ) 
@@ -140,15 +140,16 @@ var SimEngine = function( params ){
 
 
         interval = setInterval(function() {
+            self.dronesCreated +=1;            
             if( self.dronesCreated >= config.numDrones   ){
                 clearInterval( interval );
             } else {
-                self.getCreds( config.engineName + (self.dronesCreated +1 ))
+                self.getCreds( config.engineName + (self.dronesCreated))
                     .then( self.logData )
                     .then( self.spinUpDrone )
                     .then( self.startDrone )               
                     .done() 
-                self.dronesCreated +=1;
+
             }
         }, config.delay*1000);
     }
