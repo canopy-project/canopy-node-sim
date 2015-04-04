@@ -17,12 +17,12 @@ if ( cluster.isMaster ){
 } else {
     var params = {
         engineName: 'engine-' + h.generateRandomString() + '-',      
-        port: 80,
-        host: 'dev03.canopy.link',
+        port: process.env.CANOPY_PORT,
+        host: process.env.CANOPY_HOST,
         protocol: http,
-        numDrones: 10,
-        delay: .5,
-        droneReportPeriod: 1
+        numDrones: process.env.NUM_DRONES,
+        delay: process.env.SPIN_UP_DELAY,
+        droneReportPeriod: process.env.REPORT_PERIOD
     }
 
     var engine = require('./engine');
