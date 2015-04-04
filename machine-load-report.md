@@ -36,6 +36,17 @@ Using ccs.canopy.link over SSL ()
     498, 0.135, 0.3, 0.265, 2.632
 
 
+30000 drones on dev03.canopy.link
+
+    TX:             cum:    226MB   peak:   1.99Mb              rates:   1.44Mb  1.56Mb  1.58Mb
+    RX:                     113MB           1.14Mb                        881kb   919kb   924kb
+    TOTAL:                  339MB           3.10Mb                       2.30Mb  2.46Mb  2.49Mb
+
+    8210 root      20   0  504628  19860   5376 S  76.6  0.2  90:03.00 canopy-server          
+    29027 root      20   0 4155776 2.576g 732700 S  73.6 33.0  43:21.40 java                   
+
+     load average: 6.69, 6.49, 4.39
+     
 Results 2015-05-01
 ------------------------------------------------------------------------------------------------
 1) I changed the spin up delay to .1 and left the report
