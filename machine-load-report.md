@@ -47,6 +47,8 @@ Using ccs.canopy.link over SSL ()
 
      load average: 6.69, 6.49, 4.39
      
+     2494, 3.756, 3.756, 3.756, 162.776  (3sec avg response time)
+     
 Results 2015-05-01
 ------------------------------------------------------------------------------------------------
 1) I changed the spin up delay to .1 and left the report
