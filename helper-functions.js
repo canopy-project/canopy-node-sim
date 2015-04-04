@@ -42,6 +42,9 @@ var generateInt = function(min, max) {
 
 var getHighResClock = function(){
     var hrTime = process.hrtime();
+  //  console.log(hrTime);
+    var out =  hrTime[0] + hrTime[1]/1000000000;
+  //  console.log( out);
     return hrTime[0] + hrTime[1]/1000000000;
 }
 

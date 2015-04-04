@@ -107,7 +107,7 @@ var SimEngine = function( params ){
 
 
         interval = setInterval(function() {
-            if( self.dronesCreated > config.numDrones ){
+            if( self.dronesCreated >= config.numDrones ){
                 clearInterval( interval );
             } else {
                 self.getCreds( config.engineName + self.dronesCreated )

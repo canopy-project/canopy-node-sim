@@ -13,12 +13,14 @@ var params = {
     port: 80,
     host: 'dev03.canopy.link',
     protocol: http,
-    numDrones: 4,
-    delay: .1,
+    numDrones: 10,
+    delay: 10,
     droneReportPeriod: 1
 }
 
 var engine = require('./engine');
+console.log('\n***\nconfig: \n***\n');
+console.dir(params);
 console.dir(engine);
 
 var simEngine = engine.createSimEngine( params );   

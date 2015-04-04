@@ -82,10 +82,11 @@ var Drone = function( params ){
     self.update = function(){
        // console.log( config.friendlyName + ' is updating cloud variables' );
 
-        var startTime;
-        var endTime;
-        var responseTime;
-        interval = setInterval( function(){               
+
+
+        interval = setInterval( function(){
+                var startTime;
+               // console.log("startTime: " + startTime);        
                 var payloadString = JSON.stringify({      
                     "vars" : {
                         "temperature" : h.generateInt(-25,140),
@@ -103,32 +104,31 @@ var Drone = function( params ){
                 };
 
                 var req = protocol.request(options, function(res) {
+                    var latency =  h.getHighResClock() - startTime;
+                    self.engine.addProfileData(0, latency);
                     res.setEncoding('utf-8');
 
                     var responseString = '';
 
                     res.on('data', function(data) {
-                        responseString += data;
+                        responseString += data;                   
                     });
 
                     res.on('end', function() {
                         var resultObject = JSON.parse(responseString);
-                       // console.log( responseString );
-                       endTime = h.getHighResClock();
-
-                       responseTime = endTime - startTime;
-                       console.log( responseTime );
-                       self.engine.addProfileData( 0, responseTime );
                     });
                 });
 
                 req.on('error', function(e) {
                     console.log(e);
                 });
-                startTime = h.getHighResClock();
-                req.write( payloadString );
-                req.end();   
-                // console.log( config.friendlyName + ' updated' );                     
+
+                
+
+                req.write( payloadString, function(){
+                    startTime = h.getHighResClock();
+            } );    
+                req.end();                 
         }, self.reportPeriod*1000 );
     }
 
@@ -165,7 +165,7 @@ var Drone = function( params ){
         req.on('error', function(e) {
             console.log(e);
         });
-        req.end();        
+        req.end();
         console.log( config.friendlyName + ' is No More' );
     }
 
