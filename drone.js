@@ -141,7 +141,7 @@ var Drone = function( params ){
 
     self.stop = function(){
         // stop updating cloud variables
-        console.log( config.friendlyName + ' is Stop' );
+        // console.log( config.friendlyName + ' is Stop' );
         clearInterval( interval );
     }
     self.destroy = function(){
@@ -173,7 +173,7 @@ var Drone = function( params ){
             console.log(e);
         });
         req.end();
-        console.log( config.friendlyName + ' is No More' );
+        //console.log( config.friendlyName + ' is No More' );
     }
 
     self.getReport = function(){

@@ -143,11 +143,11 @@ var SimEngine = function( params ){
             if( self.dronesCreated >= config.numDrones   ){
                 clearInterval( interval );
             } else {
-                self.getCreds( config.engineName + self.dronesCreated )
+                self.getCreds( config.engineName + (self.dronesCreated +1 ))
                     .then( self.logData )
                     .then( self.spinUpDrone )
                     .then( self.startDrone )               
-                    .done()
+                    .done() 
                 self.dronesCreated +=1;
             }
         }, config.delay*1000);
