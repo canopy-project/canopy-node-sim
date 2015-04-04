@@ -14,6 +14,18 @@ Behind Apache Proxy:
     root      20   0  537588  12376   5412 S  12.9  0.2   4:42.68 canopy-server       
     root      20   0 3446232 473792  38668 S  10.9  5.8   4:19.76 java      
 
+
+w/ 1000 drones:
+    
+    TX:             cum:   34.4MB   peak:    410kb                               rates:    383kb   363kb   364kb
+    RX:                    17.5MB            198kb                                         192kb   190kb   188kb
+    TOTAL:                 51.9MB            601kb                                         575kb   554kb   552kb
+
+    load average: 1.31, 0.88, 0.52
+
+    8210 root      20   0  430124  11664   5292 S  32.9  0.1   5:36.91 canopy-server                           
+    29027 root      20   0 3546356 853208 126584 S  24.9 10.4  12:39.06 java          
+
 Results 2015-05-01
 ------------------------------------------------------------------------------------------------
 1) I changed the spin up delay to .1 and left the report
