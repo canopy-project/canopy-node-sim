@@ -6,8 +6,8 @@
  */
 var cluster = require('cluster');
 var h = require('./helper-functions');
-var http = require('http');
-var https = require('https');
+var protocol = require(process.env.CANOPY_PROTOCOL);
+
 
 if ( cluster.isMaster ){
     var cpuCount = require('os').cpus().length;
@@ -19,7 +19,7 @@ if ( cluster.isMaster ){
         engineName: 'engine-' + h.generateRandomString() + '-',      
         port: process.env.CANOPY_PORT,
         host: process.env.CANOPY_HOST,
-        protocol: http,
+        protocol: protocol,
         numDrones: process.env.NUM_DRONES,
         delay: process.env.SPIN_UP_DELAY,
         droneReportPeriod: process.env.REPORT_PERIOD
