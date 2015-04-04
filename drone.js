@@ -81,8 +81,8 @@ var Drone = function( params ){
 
     self.update = function(){
        // console.log( config.friendlyName + ' is updating cloud variables' );
-
-
+       var lastUpdateTime;
+       var actualInterval;
 
         interval = setInterval( function(){
                 var startTime;
@@ -105,7 +105,14 @@ var Drone = function( params ){
 
                 var req = protocol.request(options, function(res) {
                     var latency =  h.getHighResClock() - startTime;
-                    self.engine.addProfileData(0, latency);
+                    if( lastUpdateTime !== undefined ){
+                        self.reportPeriod = h.getHighResClock() - lastUpdateTime;
+                    } else {
+                        self.reportPeriod = -1;
+                    }
+                    console.log('self.reportPeriod: ' + self.reportPeriod );
+                    lastUpdateTime = h.getHighResClock();
+                    self.engine.addProfileData( self.reportPeriod, latency );
                     res.setEncoding('utf-8');
 
                     var responseString = '';

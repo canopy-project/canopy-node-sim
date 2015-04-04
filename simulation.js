@@ -13,8 +13,8 @@ var params = {
     port: 80,
     host: 'dev03.canopy.link',
     protocol: http,
-    numDrones: 10,
-    delay: 10,
+    numDrones: 500,
+    delay: .1,
     droneReportPeriod: 1
 }
 

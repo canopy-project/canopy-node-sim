@@ -48,6 +48,10 @@ var getHighResClock = function(){
     return hrTime[0] + hrTime[1]/1000000000;
 }
 
+var round3Decimals = function( num ){
+    return Math.round( num*1000 )/1000;
+} 
+
 module.exports.generateRandomString = generateRandomString;
 module.exports.generateUsername = generateUsername;
 module.exports.generateEmail = generateEmail;
@@ -56,3 +60,4 @@ module.exports.generateAuthString = generateAuthString;
 module.exports.generateDeviceFriendlyNames = generateDeviceFriendlyNames;
 module.exports.generateInt = generateInt;
 module.exports.getHighResClock = getHighResClock;
+module.exports.round3Decimals = round3Decimals;

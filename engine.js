@@ -2,6 +2,7 @@
 var Drone = require('./drone');
 var User = require('./user');
 var q = require('q');
+var h = require('./helper-functions');
 
 /*
  * Manages a number of sim drones
@@ -39,6 +40,11 @@ var SimEngine = function( params ){
     self.responseAvgLatency = [];
     self.responseMinLatency = [];
     self.responseMaxLatency = [];
+    self.responseAvgLatencyCount = [];
+    self.avgReportPeriod = [];
+    self.avgReportPeriodCount = [];
+
+
 
     self.actualReportPeriod = {};
     self.addProfileData = function( reportPeriod, latency ){
@@ -52,10 +58,37 @@ var SimEngine = function( params ){
         } else {
             self.responseMaxLatency[ self.dronesCreated ] = Math.max( latency, self.responseMaxLatency[ self.dronesCreated ] );
         }
+        if( self.responseAvgLatency[self.dronesCreated] === undefined ){
+            self.responseAvgLatency[self.dronesCreated] = latency;
+            self.responseAvgLatencyCount[self.dronesCreated] = 1;
+        } else {
+            var oldProduct = self.responseAvgLatencyCount[self.dronesCreated] * self.responseAvgLatency[self.dronesCreated];
+            var newProduct = oldProduct + latency;
+            self.responseAvgLatencyCount[self.dronesCreated] += 1;
+            var newAvgLatency = newProduct/self.responseAvgLatencyCount[self.dronesCreated];
+            self.responseAvgLatency[self.dronesCreated] = newAvgLatency;
+        }
+        if( reportPeriod > 0){    
+            if( self.avgReportPeriod[self.dronesCreated] === undefined ){
+                self.avgReportPeriod[self.dronesCreated] = reportPeriod;
+                self.avgReportPeriodCount[self.dronesCreated] = 1;
+            } else {
+                var oldProduct = self.avgReportPeriodCount[self.dronesCreated] * self.avgReportPeriod[self.dronesCreated];
+                var newProduct = oldProduct + reportPeriod;
+                self.avgReportPeriodCount[self.dronesCreated] += 1;
+                var newAvg = newProduct/self.avgReportPeriodCount[self.dronesCreated];
+                self.avgReportPeriod[self.dronesCreated] = newAvg;
+            }
+        }
     };
+
     self.dumpReport = function(){
         for(var i=0;i<self.dronesCreated;i++){
-            console.log( i +', ' + self.responseMinLatency[i] + ', ' + self.responseMaxLatency[i]);
+            console.log( i +', ' + h.round3Decimals( self.responseMinLatency[i] )
+                 + ', ' + h.round3Decimals( self.responseMaxLatency[i] )
+                 + ', ' + h.round3Decimals( self.responseAvgLatency[i] )
+                 + ', ' + h.round3Decimals( self.avgReportPeriod[i] ) 
+            );
         }
     }
 
@@ -107,7 +140,7 @@ var SimEngine = function( params ){
 
 
         interval = setInterval(function() {
-            if( self.dronesCreated >= config.numDrones ){
+            if( self.dronesCreated >= config.numDrones   ){
                 clearInterval( interval );
             } else {
                 self.getCreds( config.engineName + self.dronesCreated )
