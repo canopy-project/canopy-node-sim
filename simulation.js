@@ -7,31 +7,32 @@
 var cluster = require('cluster');
 var h = require('./helper-functions');
 var protocol = require(process.env.CANOPY_PROTOCOL);
-
+var engine = require('./engine');
+var params = {
+    engineName: 'engine-' + h.generateRandomString() + '-',      
+    port: process.env.CANOPY_PORT,
+    host: process.env.CANOPY_HOST,
+    protocol: protocol,
+    numDrones: process.env.NUM_DRONES,
+    numBatches: process.env.NUM_BATCHES,
+    spinUpDelay: process.env.SPIN_UP_DELAY,
+    batchDelay: process.env.BATCH_DELAY,
+    droneReportPeriod: process.env.REPORT_PERIOD
+}
 
 if ( cluster.isMaster ){
     var cpuCount = require('os').cpus().length;
-    for(var i=0; i<cpuCount;i+=1){
+    for(var i=0; i<1/*cpuCount*/;i+=1){
         cluster.fork();
     }
 } else {
-    var params = {
-        engineName: 'engine-' + h.generateRandomString() + '-',      
-        port: process.env.CANOPY_PORT,
-        host: process.env.CANOPY_HOST,
-        protocol: protocol,
-        numDrones: process.env.NUM_DRONES,
-        delay: process.env.SPIN_UP_DELAY,
-        droneReportPeriod: process.env.REPORT_PERIOD
-    }
 
-    var engine = require('./engine');
-    console.log('\n***\nconfig: \n***\n');
+/*    console.log('\n***\nconfig: \n***\n');
     console.dir(params);
-    console.dir(engine);
+    console.dir(engine);*/
 
     var simEngine = engine.createSimEngine( params );   
-    console.dir(simEngine);
+/*    console.dir(simEngine);*/
     simEngine.start();
 
     process.on('SIGINT', function() {

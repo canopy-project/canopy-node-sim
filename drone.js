@@ -136,7 +136,7 @@ var Drone = function( params ){
                     startTime = h.getHighResClock();
             } );    
                 req.end();                 
-        }, self.reportPeriod*1000 );
+        }, self.reportPeriod*1000 ); 
     }
 
     self.stop = function(){
