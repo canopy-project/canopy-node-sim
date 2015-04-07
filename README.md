@@ -4,6 +4,9 @@ Simulations spin up an Engine. An Engine creates a user that creates a determine
 
 When the engine shuts down, a report prints out that shows the min, max, and average latencies for the number of active drones before deleting the drones and the user from the server. 
 
+Drones spin up in batches. You set NUM_DRONES for the drones per batch and NUM_BATCHES for number of batches.  Set BATCH_DELAY for the time between the start of one batch spin-up and another.
+
+Simulation.js uses clustering. It will look to see how many cores are available on your system, then spin up one instance of engine.js per core. 
 # Set Environment Variables
 ```
 export CANOPY_PORT="yourport" [80 for http, 433 for https]
@@ -19,18 +22,3 @@ export REPORT_PERIOD="yourReportPeriod" [Seconds between drone variable updates]
 # Run a simulation 
 ```
 node simulation.js
-```
-# To Do
-
-Set up engine to spin up batches of drones sequentially to gather data on latencies for 10, 100, 1000, etc. drones.
-
-
-```
-	// LINEAR LOAD: take the total numDrones amount - divide it by numBatches, then step it up linearly
-var loadDrones = function( numDrones, numBatches, batchInterval  ){
-	var batch = parseInt( numDrones/numBatches );
-	// spin up the first batch and let them run for batchInterval, then add the next chunk
-}	
-
-	// EXPONENTIAL LOAD: take the total numDrones amount - divide it by 10, then step it up exponentially
-```

@@ -22,7 +22,7 @@ var params = {
 
 if ( cluster.isMaster ){
     var cpuCount = require('os').cpus().length;
-    for(var i=0; i<1/*cpuCount*/;i+=1){
+    for(var i=0; i<cpuCount;i+=1){
         cluster.fork();
     }
 } else {
