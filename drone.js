@@ -39,7 +39,7 @@ var Drone = function( params ){
 
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
-        console.log( config.friendlyName + ' is Go' );
+       // console.log( config.friendlyName + ' is Go' );
         var payload = self.cloudVarDecls;
 
         var payloadString = JSON.stringify( payload );
@@ -109,7 +109,7 @@ var Drone = function( params ){
                     // and adding profile data to the engine
                     //console.log('self.batchLoaded ' + self.batchLoaded);
                     if( self.batchLoaded === 1 ){
-                        console.log('self.reportPeriod: ' + self.reportPeriod );
+                        // console.log('self.reportPeriod: ' + self.reportPeriod );
                         self.engine.addProfileData( self.reportPeriod, latency );
                     }
                     

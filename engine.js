@@ -15,8 +15,8 @@ var SimEngine = function( params ){
     var self = this;
     self.user = new User( params );
     self.user.register();
-    console.log('\n\n\nuser:\n\n ');
-    console.dir(self.user);
+    // console.log('\n\n\nuser:\n\n ');
+    // console.dir(self.user);
 
     var interval = null;
     var batchInterval = null;
@@ -53,7 +53,6 @@ var SimEngine = function( params ){
 
     self.actualReportPeriod = {};
     self.addProfileData = function( reportPeriod, latency ){
-        console.log(self.avgReportPeriod);
         if ( self.responseMinLatency[ self.dronesCreated ] === undefined ){
             self.responseMinLatency[ self.dronesCreated ] = latency;
         } else {
@@ -89,15 +88,16 @@ var SimEngine = function( params ){
     };
 
     self.dumpReport = function(){
+        console.log('volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period' );
             // For every batch ...
         for(var i=1;i<=config.numBatches;i++){
             // Print out the data of that batch number multiplied
             // by the number of drones perbatch
             var j = i*config.numDrones;
-            console.log( ( j ) +', ' + h.round3Decimals( self.responseMinLatency[j] )
-                 + ', ' + h.round3Decimals( self.responseMaxLatency[j] )
-                 + ', ' + h.round3Decimals( self.responseAvgLatency[j] )
-                 + ', ' + h.round3Decimals( self.avgReportPeriod[j] ) 
+            console.log(( j ) +'\t' + h.round3Decimals( self.responseMinLatency[j] )
+                 + '\t' + h.round3Decimals( self.responseMaxLatency[j] )
+                 + '\t' + h.round3Decimals( self.responseAvgLatency[j] )
+                 + '\t' + h.round3Decimals( self.avgReportPeriod[j] ) 
             );
         }
     }
@@ -131,17 +131,20 @@ var SimEngine = function( params ){
         deferred.resolve(self.user.createDevice({ friendlyName : friendlyName }));
         return deferred.promise;
     }
+
     self.logData = function( data ){
         var deferred = q.defer();
-        console.log('\n***\nEngine has received drone init data: \n***\n');
-       // console.log( data );
+        // console.log('\n***\nEngine has received drone init data: \n***\n');
+        // console.log( data );
         deferred.resolve( data );
         return deferred.promise;
     }
+
     self.startDrone = function( drone ){
         drone.start();
         drones.push( drone );
     }
+
     self.start = function(){
         
         batchInterval = setInterval(function(){
@@ -151,8 +154,8 @@ var SimEngine = function( params ){
                 // increment the number of batches created
                 batchesCreated +=1;
 
-                console.log('batchesCreated ' + batchesCreated);
-                console.log(' config.numBatches ' + config.numBatches);
+                // console.log('batchesCreated ' + batchesCreated);
+                // console.log(' config.numBatches ' + config.numBatches);
                 // Set the batchLoaded boolean on all drones to 
                 // "0". This pauses their data collection until
                 // the new batch has loaded
@@ -192,23 +195,36 @@ var SimEngine = function( params ){
         },  config.batchDelay*1000);
     
     }
-    self.stop = function(){
-        // stop all drones 
-        clearInterval( interval );
-        for(var i=0;i<drones.length;i++){
-            drones[i].stop();
-        }
-    }
 
     self.shutdown = function(){
         // stop, clean-up, destroy drones
-        self.stop();
-        self.user.delete();
-        self.dumpReport();
+        self.stop( self.dumpReport );
+    }
+    
+    self.stop = function( callback ){
+        console.log('shutting down');
+        var callbackTrigger = 0;
+        // stop making new drones
+        if( batchInterval ){
+            clearInterval( batchInterval );
+        }
+        if( interval ){ 
+            clearInterval( interval );
+        }
+
+        // tell each drone to stop reporting
         for(var i=0;i<drones.length;i++){
+            drones[i].stop();
             drones[i].destroy();
+            callbackTrigger +=1;
+        }
+
+        if( callbackTrigger >= drones.length ){
+            self.user.delete();
+            callback();
         }
     }
+
 }
 
 /*
