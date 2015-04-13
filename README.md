@@ -17,6 +17,7 @@ export NUM_BATCHES="yourNum" [number of batches]
 export SPIN_UP_DELAY="yourDelay" [Seconds between drone spin ups]
 export BATCH_DELAY="yourDelay" [Seconds between batch spin ups]
 export REPORT_PERIOD="yourReportPeriod" [Seconds between drone variable updates]
+export CLUSTER=boolean [true or false, sets whether to use a cluster based on system cores or run a single instance]
 ```
 
 # Run a simulation 

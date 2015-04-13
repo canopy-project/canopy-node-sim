@@ -53,6 +53,7 @@ var SimEngine = function( params ){
 
     self.actualReportPeriod = {};
     self.addProfileData = function( reportPeriod, latency ){
+        console.log(self.avgReportPeriod);
         if ( self.responseMinLatency[ self.dronesCreated ] === undefined ){
             self.responseMinLatency[ self.dronesCreated ] = latency;
         } else {
@@ -88,11 +89,15 @@ var SimEngine = function( params ){
     };
 
     self.dumpReport = function(){
-        for(var i=0;i<self.dronesCreated;i++){
-            console.log( (i+1) +', ' + h.round3Decimals( self.responseMinLatency[i] )
-                 + ', ' + h.round3Decimals( self.responseMaxLatency[i] )
-                 + ', ' + h.round3Decimals( self.responseAvgLatency[i] )
-                 + ', ' + h.round3Decimals( self.avgReportPeriod[i] ) 
+            // For every batch ...
+        for(var i=1;i<=config.numBatches;i++){
+            // Print out the data of that batch number multiplied
+            // by the number of drones perbatch
+            var j = i*config.numDrones;
+            console.log( ( j ) +', ' + h.round3Decimals( self.responseMinLatency[j] )
+                 + ', ' + h.round3Decimals( self.responseMaxLatency[j] )
+                 + ', ' + h.round3Decimals( self.responseAvgLatency[j] )
+                 + ', ' + h.round3Decimals( self.avgReportPeriod[j] ) 
             );
         }
     }
@@ -143,16 +148,36 @@ var SimEngine = function( params ){
             if( batchesCreated >= config.numBatches){
                 clearInterval( batchInterval );
             } else {
-                batchesCreated += 1;
+                // increment the number of batches created
+                batchesCreated +=1;
+
+                console.log('batchesCreated ' + batchesCreated);
+                console.log(' config.numBatches ' + config.numBatches);
+                // Set the batchLoaded boolean on all drones to 
+                // "0". This pauses their data collection until
+                // the new batch has loaded
+                console.log('Loading Batch');
+                for( var i=0 ; i<drones.length ; i++ ){
+                    drones[i].batchLoaded = 0;
+                }                  
+                var deferred = q.defer();
+
                 // Every delay second, spin up a drone until numDrones is reached
                 // First, create a device with the User and return the credentials
                 // needed to spin up a drone.
                 // Then, spin up a drone and start it
+                
                 var batchDronesCreated = 0;
                 interval = setInterval(function() {
-                    console.log('\n***\nconfig.numBatches: '+ config.numBatches + '\n***\n');
                     if( batchDronesCreated >= config.numDrones ){
+
                         clearInterval( interval );
+                        // After each batch is loaded, set all drones batchLoaded
+                        // boolean to true. This will tell them to report data.
+                        console.log('Resuming Reporting');
+                        for( var i=0 ; i<drones.length ; i++ ){
+                            drones[i].batchLoaded = 1;
+                        }                        
                     } else {
                         self.dronesCreated += 1;
                         batchDronesCreated += 1;
@@ -161,7 +186,6 @@ var SimEngine = function( params ){
                             .then( self.spinUpDrone )
                             .then( self.startDrone )               
                             .done() 
-
                     }
                 }, config.spinUpDelay*1000);
             }
@@ -174,7 +198,6 @@ var SimEngine = function( params ){
         for(var i=0;i<drones.length;i++){
             drones[i].stop();
         }
-
     }
 
     self.shutdown = function(){

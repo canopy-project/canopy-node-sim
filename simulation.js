@@ -20,24 +20,44 @@ var params = {
     droneReportPeriod: process.env.REPORT_PERIOD
 }
 
-if ( cluster.isMaster ){
-    var cpuCount = require('os').cpus().length;
-    for(var i=0; i<cpuCount;i+=1){
-        cluster.fork();
-    }
-} else {
+console.log('numBatches: ' + params.numBatches)
 
-/*    console.log('\n***\nconfig: \n***\n');
-    console.dir(params);
-    console.dir(engine);*/
+// Engine initialization function, provides Engine
+// set up and tear down
 
+var initEngine = function(){
     var simEngine = engine.createSimEngine( params );   
-/*    console.dir(simEngine);*/
     simEngine.start();
-
     process.on('SIGINT', function() {
       simEngine.shutdown();
       console.log('engine has shut down');
-      process.exit();
     });
+}
+
+// Engine Cluster function - runs if process.env.CLUSTER
+// is true
+
+var runCluster = function(){
+    console.log('running cluster');
+    if ( cluster.isMaster ){
+    // scan for cores on your
+    // computer and fork one engine per core
+        var cpuCount = require('os').cpus().length;
+        for(var i=0; i<cpuCount;i+=1){
+            cluster.fork();
+        }
+    } else {
+    // The following function is run once per fork
+        initEngine();
+    }    
+}
+ 
+// Run program based on CLUSTER truthiness
+
+if( process.env.CLUSTER === 'false' ){
+    console.log('running single instance');
+    initEngine();
+} else {
+    console.log('running cluster');
+    runCluster(); 
 }

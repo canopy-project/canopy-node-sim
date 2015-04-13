@@ -17,6 +17,7 @@ var User = function( params ){
     var createDevicePath = '/api/create_devices';
     var loginPath = '/api/login';
     var selfPath = '/api/user/self';
+
     self.register = function( callback ){
         var fireCallback = function(){
             if( callback ){
@@ -122,6 +123,7 @@ var User = function( params ){
             Authorization: 'r2j790sdf689g0sd6'
         }
     }
+    
     self.createDevice = function( device, callback ){
 
 	      var deferred = q.defer();

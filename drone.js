@@ -4,7 +4,7 @@ var h = require('./helper-functions');
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 /*  
  *  Initializes cloud variables, then sets it
- *  to post updates to the the variables 1/min.
+ *  to post updates to the variables 1/min.
  */
 
 // Drone Methods : initialize it with server, port, paths, variables
@@ -33,18 +33,14 @@ var Drone = function( params ){
     self.engine = config.engine;
     self.reportPeriod = config.reportPeriod;
     self.selfPath = '/api/device/' + self.UUID;
+    self.batchLoaded = 0;
     var interval = null;
 
 
     console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
     self.start = function(){
-        console.log( 'protocol: ' + protocol);
-        // console.log('selfPath: ' + self.selfPath );
-        // initialize cloud variables
         console.log( config.friendlyName + ' is Go' );
-        // update cloud variables 1/reportPeriod
         var payload = self.cloudVarDecls;
-       // console.log( 'payload: ' + payload );
 
         var payloadString = JSON.stringify( payload );
 
@@ -66,8 +62,7 @@ var Drone = function( params ){
             });
 
             res.on('end', function() {
-                var resultObject = JSON.parse(responseString);
-               // console.log( responseString );
+                var resultObject = JSON.parse( responseString );
                 self.update();
             });
         });
@@ -80,13 +75,11 @@ var Drone = function( params ){
     }
 
     self.update = function(){
-       // console.log( config.friendlyName + ' is updating cloud variables' );
        var lastUpdateTime;
        var actualInterval;
 
         interval = setInterval( function(){
-                var startTime;
-               // console.log("startTime: " + startTime);        
+                var startTime;    
                 var payloadString = JSON.stringify({      
                     "vars" : {
                         "temperature" : h.generateInt(-25,140),
@@ -110,9 +103,16 @@ var Drone = function( params ){
                     } else {
                         self.reportPeriod = -1;
                     }
-                    console.log('self.reportPeriod: ' + self.reportPeriod );
                     lastUpdateTime = h.getHighResClock();
-                    self.engine.addProfileData( self.reportPeriod, latency );
+
+                    // If the batch has fully spun up, start posting data
+                    // and adding profile data to the engine
+                    //console.log('self.batchLoaded ' + self.batchLoaded);
+                    if( self.batchLoaded === 1 ){
+                        console.log('self.reportPeriod: ' + self.reportPeriod );
+                        self.engine.addProfileData( self.reportPeriod, latency );
+                    }
+                    
                     res.setEncoding('utf-8');
 
                     var responseString = '';
@@ -140,8 +140,6 @@ var Drone = function( params ){
     }
 
     self.stop = function(){
-        // stop updating cloud variables
-        // console.log( config.friendlyName + ' is Stop' );
         clearInterval( interval );
     }
     self.destroy = function(){
@@ -165,7 +163,6 @@ var Drone = function( params ){
 
             res.on('end', function() {
                 var resultObject = JSON.parse(responseString);
-               // console.log( responseString );
             });
         });
 
