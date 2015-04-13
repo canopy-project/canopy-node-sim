@@ -113,7 +113,7 @@ var SimEngine = function( params ){
                  + '\t' + h.round3Decimals( self.avgReportPeriod[j] ) 
             );
         }
-        console.log('\n***\n\n');            
+        console.log('\n***\n\n'); 
     }
 
     self.spinUpDrone = function( data ){
