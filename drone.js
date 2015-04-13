@@ -37,7 +37,7 @@ var Drone = function( params ){
     var interval = null;
 
 
-    console.log('\n***\nDrone '+ self.friendlyName +' initializing\n***\n');
+    console.log('Drone '+ self.friendlyName +' initialized');
     self.start = function(){
        // console.log( config.friendlyName + ' is Go' );
         var payload = self.cloudVarDecls;

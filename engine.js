@@ -88,7 +88,7 @@ var SimEngine = function( params ){
     };
 
     self.dumpReport = function(){
-        console.log('volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period' );
+        console.log('\n\n***\nvolume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period');
             // For every batch ...
         for(var i=1;i<=config.numBatches;i++){
             // Print out the data of that batch number multiplied
@@ -98,6 +98,7 @@ var SimEngine = function( params ){
                  + '\t' + h.round3Decimals( self.responseMaxLatency[j] )
                  + '\t' + h.round3Decimals( self.responseAvgLatency[j] )
                  + '\t' + h.round3Decimals( self.avgReportPeriod[j] ) 
+                 + '\n***\n\n'
             );
         }
     }
