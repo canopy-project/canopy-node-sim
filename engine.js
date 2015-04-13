@@ -23,7 +23,8 @@ var SimEngine = function( params ){
     var batchesCreated = 0;
     var drones = [];
     self.dronesCreated = 0;
-    var batchDronesCreated = 0; 
+    var batchDronesCreated = 0;
+    var startTime = new Date().getTime();
     var config = {
         engineName: params.engineName,      
         port: params.port,
@@ -88,7 +89,19 @@ var SimEngine = function( params ){
     };
 
     self.dumpReport = function(){
-        console.log('\n\n***\nvolume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period');
+        var endTime = new Date().getTime();
+        var duration = endTime - startTime;
+        console.log(
+            '\n\n***\n' 
+            + '\n'
+            + 'Performance Report: ' + config.engineName 
+            + '\n\n'
+            + 'Start Time: ' + startTime + '\n'
+            + 'End Time: ' + endTime + '\n'
+            + 'Duration: ' + duration + '\n' 
+            + '\n'
+            + 'volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period');
+            
             // For every batch ...
         for(var i=1;i<=config.numBatches;i++){
             // Print out the data of that batch number multiplied
@@ -98,9 +111,9 @@ var SimEngine = function( params ){
                  + '\t' + h.round3Decimals( self.responseMaxLatency[j] )
                  + '\t' + h.round3Decimals( self.responseAvgLatency[j] )
                  + '\t' + h.round3Decimals( self.avgReportPeriod[j] ) 
-                 + '\n***\n\n'
             );
         }
+        console.log('\n***\n\n');            
     }
 
     self.spinUpDrone = function( data ){
