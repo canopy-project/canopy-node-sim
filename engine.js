@@ -107,7 +107,7 @@ var SimEngine = function( params ){
             + 'volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period' +'\t'+ 'sample count');
             
             // For every batch ...
-        for(var i=0;i<=config.numDrones;i++){
+        for(var i=0;i<=config.numDrones*config.numBatches;i++){
             // Print out the data of that batch number multiplied
             // by the number of drones perbatch
 /*            var j = i*config.numDrones;*/
@@ -115,7 +115,7 @@ var SimEngine = function( params ){
                  + '\t' + h.round3Decimals( self.responseMaxLatency[i] )
                  + '\t' + h.round3Decimals( self.responseAvgLatency[i] )
                  + '\t' + h.round3Decimals( self.avgReportPeriod[i] ) 
-                 + '\t' + h.round3Decimals( self.responseAvgLatencyCount[i] )
+                 + '\t\t' + h.round3Decimals( self.avgReportPeriodCount[i] )
             );
         }
         console.log('\n***\n\n'); 
