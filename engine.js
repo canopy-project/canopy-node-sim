@@ -115,7 +115,7 @@ var SimEngine = function( params ){
                  + '\t' + h.round3Decimals( self.responseMaxLatency[i] )
                  + '\t' + h.round3Decimals( self.responseAvgLatency[i] )
                  + '\t' + h.round3Decimals( self.avgReportPeriod[i] ) 
-                 + '\t\t' + h.round3Decimals( self.avgReportPeriodCount[i] )
+                 + '\t\t' + h.round3Decimals( self.responseAvgLatencyCount[i] )
             );
         }
         console.log('\n***\n\n'); 
