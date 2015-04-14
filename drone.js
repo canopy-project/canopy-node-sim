@@ -75,67 +75,60 @@ var Drone = function( params ){
     }
 
     self.update = function(){
-       var lastUpdateTime;
-       var actualInterval;
+        var lastUpdateTime;
+        var actualInterval;
 
         interval = setInterval( function(){
-                var startTime;    
-                var payloadString = JSON.stringify({      
-                    "vars" : {
-                        "temperature" : h.generateInt(-25,140),
-                        "humidity" : h.generateInt(0,100),
-                        "dimmer_brightness" : h.generateInt(0,10)
-                    }
-                });
+            var startTime;    
+            var payloadString = JSON.stringify({      
+                "vars" : {
+                    "temperature" : h.generateInt(-25,140),
+                    "humidity" : h.generateInt(0,100),
+                    "dimmer_brightness" : h.generateInt(0,10)
+                }
+            });
 
-                var options = {
-                    host: self.host,
-                    port: self.port,
-                    path: self.selfPath,
-                    method: 'POST',
-                    headers: self.headers
-                };
+            var options = {
+                host: self.host,
+                port: self.port,
+                path: self.selfPath,
+                method: 'POST',
+                headers: self.headers
+            };
 
-                var req = protocol.request(options, function(res) {
-                    var latency =  h.getHighResClock() - startTime;
-                    if( lastUpdateTime !== undefined ){
-                        self.reportPeriod = h.getHighResClock() - lastUpdateTime;
-                    } else {
-                        self.reportPeriod = -1;
-                    }
-                    lastUpdateTime = h.getHighResClock();
+            var req = protocol.request(options, function(res) {
+                var latency =  h.getHighResClock() - startTime;
+                if( lastUpdateTime !== undefined ){
+                    self.reportPeriod = h.getHighResClock() - lastUpdateTime;
+                } else {
+                    self.reportPeriod = -1;
+                }
+                lastUpdateTime = h.getHighResClock();
 
-                    // If the batch has fully spun up, start posting data
-                    // and adding profile data to the engine
-                    //console.log('self.batchLoaded ' + self.batchLoaded);
-                    if( self.batchLoaded === 1 ){
-                        // console.log('self.reportPeriod: ' + self.reportPeriod );
-                        self.engine.addProfileData( self.reportPeriod, latency );
-                    }
-                    
-                    res.setEncoding('utf-8');
-
-                    var responseString = '';
-
-                    res.on('data', function(data) {
-                        responseString += data;                   
-                    });
-
-                    res.on('end', function() {
-                        var resultObject = JSON.parse(responseString);
-                    });
-                });
-
-                req.on('error', function(e) {
-                    console.log(e);
-                });
-
+                self.engine.addProfileData( self.reportPeriod, latency );
                 
+                res.setEncoding('utf-8');
 
-                req.write( payloadString, function(){
-                    startTime = h.getHighResClock();
-            } );    
-                req.end();                 
+                var responseString = '';
+
+                res.on('data', function(data) {
+                    responseString += data;                   
+                });
+
+                res.on('end', function() {
+                    var resultObject = JSON.parse(responseString);
+                });
+            });
+
+            req.on('error', function(e) {
+                console.log(e);
+            });
+
+            req.write( payloadString, function(){
+                startTime = h.getHighResClock();
+            } );
+
+            req.end();                 
         }, self.reportPeriod*1000 ); 
     }
 
