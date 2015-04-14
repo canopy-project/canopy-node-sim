@@ -214,8 +214,6 @@ var SimEngine = function( params ){
                     }, config.spinUpDelay*1000 );
                 } else {
                     deferred.resolve();
-                    console.log('callback: ');
-                    console.dir(callback);
                     callback();                    
                 }
                 return deferred.promise;   
