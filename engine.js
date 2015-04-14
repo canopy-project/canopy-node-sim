@@ -191,42 +191,36 @@ var SimEngine = function( params ){
 
     self.spinUpBatch = function( callback ){
 
-        // increment the number of batches created
-        batchesCreated +=1;
+        self.spinUpBatchLoop( 0, function(){
+            batchesCreated +=1;
+            callback();
+        });
 
-        // console.log('batchesCreated ' + batchesCreated);
-        // console.log(' config.numBatches ' + config.numBatches);
-        // Set the batchLoaded boolean on all drones to 
-        // "0". This pauses their data collection until
-        // the new batch has loaded
-
-        var deferred = q.defer();
-
-        // Every delay second, spin up a drone until numDrones is reached
-        // First, create a device with the User and return the credentials
-        // needed to spin up a drone.
-        // Then, spin up a drone and start it
-        
-        var batchDronesCreated = 0;
-        interval = setInterval(function() {
-            if( batchDronesCreated >= config.numDrones ){
-                callback();
-                clearInterval( interval );
-                // After each batch is loaded, set all drones batchLoaded
-                // boolean to true. This will tell them to report data.
-            } else {
-                self.dronesCreated += 1;
-                batchDronesCreated += 1;
-                self.getCreds( config.engineName + (self.dronesCreated))
-                    .then( self.logData )
-                    .then( self.spinUpDrone )
-                    .then( self.startDrone )               
-                    .done() 
-            }
-        }, config.spinUpDelay*1000);
     }        
 
-
+    self.spinUpBatchLoop = function( batchDronesCreated, callback){
+        self.getCreds( config.engineName + (self.dronesCreated))
+            .then( self.logData )
+            .then( self.spinUpDrone )
+            .then( self.startDrone )
+            .then( function(){
+                var deferred = q.defer();
+                self.dronesCreated += 1;
+                batchDronesCreated +=1;
+                if( batchDronesCreated < config.numDrones ){
+                    setTimeout( function(){
+                        self.spinUpBatchLoop( batchDronesCreated, callback );
+                    }, config.spinUpDelay*1000 );
+                } else {
+                    deferred.resolve();
+                    console.log('callback: ');
+                    console.dir(callback);
+                    callback();                    
+                }
+                return deferred.promise;   
+            })               
+            .done();
+    }
 
     self.shutdown = function(){
         // stop, clean-up, destroy drones
