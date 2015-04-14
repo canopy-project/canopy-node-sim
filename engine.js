@@ -104,17 +104,18 @@ var SimEngine = function( params ){
             + 'End Time: ' + endTime + '\n'
             + 'Duration: ' + duration + '\n' 
             + '\n'
-            + 'volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period');
+            + 'volume'+'\t'+'min l'+'\t'+'max l'+'\t'+'avg l'+'\t'+'report period' +'\t'+ 'sample count');
             
             // For every batch ...
-        for(var i=1;i<=config.numBatches;i++){
+        for(var i=0;i<=config.numDrones;i++){
             // Print out the data of that batch number multiplied
             // by the number of drones perbatch
-            var j = i*config.numDrones;
-            console.log(( j ) +'\t' + h.round3Decimals( self.responseMinLatency[j] )
-                 + '\t' + h.round3Decimals( self.responseMaxLatency[j] )
-                 + '\t' + h.round3Decimals( self.responseAvgLatency[j] )
-                 + '\t' + h.round3Decimals( self.avgReportPeriod[j] ) 
+/*            var j = i*config.numDrones;*/
+            console.log(( i ) +'\t' + h.round3Decimals( self.responseMinLatency[i] )
+                 + '\t' + h.round3Decimals( self.responseMaxLatency[i] )
+                 + '\t' + h.round3Decimals( self.responseAvgLatency[i] )
+                 + '\t' + h.round3Decimals( self.avgReportPeriod[i] ) 
+                 + '\t' + h.round3Decimals( self.responseAvgLatencyCount[i] )
             );
         }
         console.log('\n***\n\n'); 
