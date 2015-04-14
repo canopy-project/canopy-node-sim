@@ -14,7 +14,6 @@ var h = require('./helper-functions');
 var SimEngine = function( params ){
     var self = this;
     self.user = new User( params );
-    self.user.register();
     // console.log('\n\n\nuser:\n\n ');
     // console.dir(self.user);
 
@@ -189,7 +188,9 @@ var SimEngine = function( params ){
     }
 
     self.start = function(){
-        self.batchLoop();
+        self.user.register(function() {
+            self.batchLoop();
+        });
     }
 
     self.spinUpBatch = function( callback ){
