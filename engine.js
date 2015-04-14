@@ -111,12 +111,14 @@ var SimEngine = function( params ){
             // Print out the data of that batch number multiplied
             // by the number of drones perbatch
 /*            var j = i*config.numDrones;*/
-            console.log(( i ) +'\t' + h.round3Decimals( self.responseMinLatency[i] )
-                 + '\t' + h.round3Decimals( self.responseMaxLatency[i] )
-                 + '\t' + h.round3Decimals( self.responseAvgLatency[i] )
-                 + '\t' + h.round3Decimals( self.avgReportPeriod[i] ) 
-                 + '\t\t' + h.round3Decimals( self.responseAvgLatencyCount[i] )
-            );
+            if (self.responseAvgLatencyCount[i] !== undefined) {
+                console.log(( i ) +'\t' + h.round3Decimals( self.responseMinLatency[i] )
+                     + '\t' + h.round3Decimals( self.responseMaxLatency[i] )
+                     + '\t' + h.round3Decimals( self.responseAvgLatency[i] )
+                     + '\t' + h.round3Decimals( self.avgReportPeriod[i] ) 
+                     + '\t\t' + h.round3Decimals( self.responseAvgLatencyCount[i] )
+                );
+            }
         }
         console.log('\n***\n\n'); 
     }

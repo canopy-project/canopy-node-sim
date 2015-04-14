@@ -165,6 +165,9 @@ var User = function( params ){
 
           res.on('end', function() {
               var resultObject = JSON.parse( responseString );
+              if (resultObject.devices == undefined) {
+                  console.log(responseString);
+              }
               var UUID = resultObject.devices[0].device_id;
               var secretKey = resultObject.devices[0].device_secret_key;
               var auth = h.generateAuthString( UUID, secretKey );
