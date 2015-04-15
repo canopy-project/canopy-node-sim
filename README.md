@@ -18,6 +18,10 @@ export SPIN_UP_DELAY="yourDelay" [Seconds between drone spin ups]
 export BATCH_DELAY="yourDelay" [Seconds between batch spin ups]
 export REPORT_PERIOD="yourReportPeriod" [Seconds between drone variable updates]
 export CLUSTER=boolean [true or false, sets whether to use a cluster based on system cores or run a single instance]
+export OVERLORD_HOST="overlordHost"
+export OVERLORD_PORT="overlordPort"
+export REPORTER_PATH="reporterPath"
+export TESTNAME="yourTestName"
 ```
 
 # Run a simulation 

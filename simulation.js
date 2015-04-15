@@ -17,8 +17,13 @@ var params = {
     numBatches: process.env.NUM_BATCHES,
     spinUpDelay: process.env.SPIN_UP_DELAY,
     batchDelay: process.env.BATCH_DELAY,
-    droneReportPeriod: process.env.REPORT_PERIOD
+    droneReportPeriod: process.env.REPORT_PERIOD,
+    overlordHost: process.env.OVERLORD_HOST,
+    overlordPort: process.env.OVERLORD_PORT,
+    reporterPath: process.env.REPORTER_PATH,
+    testname: process.env.OVERLORD_HOST +': ' + process.env.TESTNAME
 }
+
 
 console.log('numBatches: ' + params.numBatches)
 

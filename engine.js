@@ -3,6 +3,8 @@ var Drone = require('./drone');
 var User = require('./user');
 var q = require('q');
 var h = require('./helper-functions');
+var http = require('http');
+var report = require('./report');
 
 /*
  * Manages a number of sim drones
@@ -13,6 +15,7 @@ var h = require('./helper-functions');
 
 var SimEngine = function( params ){
     var self = this;
+    self.report = null;
     self.user = new User( params );
     // console.log('\n\n\nuser:\n\n ');
     // console.dir(self.user);
@@ -24,6 +27,7 @@ var SimEngine = function( params ){
     self.dronesCreated = 0;
     var batchDronesCreated = 0;
     self.recordingPaused = false;
+    self.shuttingDown = false;
     var startTime = new Date().getTime();
     var config = {
         engineName: params.engineName,      
@@ -34,7 +38,9 @@ var SimEngine = function( params ){
         numBatches: params.numBatches,
         spinUpDelay: params.spinUpDelay,
         batchDelay: params.batchDelay,
-        droneReportPeriod: params.droneReportPeriod 
+        droneReportPeriod: params.droneReportPeriod ,
+        overlordHost: params.overlordHost,
+        reporterPath: params.reporterPath
     }
     var protocol = config.protocol;
 
@@ -53,41 +59,12 @@ var SimEngine = function( params ){
 
 
     self.actualReportPeriod = {};
+
+
+
     self.addProfileData = function( reportPeriod, latency ){
-        if( self.recordingPaused ){
-            return;
-        }
-        if ( self.responseMinLatency[ self.dronesCreated ] === undefined ){
-            self.responseMinLatency[ self.dronesCreated ] = latency;
-        } else {
-            self.responseMinLatency[ self.dronesCreated ] = Math.min( latency, self.responseMinLatency[ self.dronesCreated ] );
-        }
-        if ( self.responseMaxLatency[ self.dronesCreated ] === undefined ){
-            self.responseMaxLatency[ self.dronesCreated ] = latency;
-        } else {
-            self.responseMaxLatency[ self.dronesCreated ] = Math.max( latency, self.responseMaxLatency[ self.dronesCreated ] );
-        }
-        if( self.responseAvgLatency[self.dronesCreated] === undefined ){
-            self.responseAvgLatency[self.dronesCreated] = latency;
-            self.responseAvgLatencyCount[self.dronesCreated] = 1;
-        } else {
-            var oldProduct = self.responseAvgLatencyCount[self.dronesCreated] * self.responseAvgLatency[self.dronesCreated];
-            var newProduct = oldProduct + latency;
-            self.responseAvgLatencyCount[self.dronesCreated] += 1;
-            var newAvgLatency = newProduct/self.responseAvgLatencyCount[self.dronesCreated];
-            self.responseAvgLatency[self.dronesCreated] = newAvgLatency;
-        }
-        if( reportPeriod > 0){    
-            if( self.avgReportPeriod[self.dronesCreated] === undefined ){
-                self.avgReportPeriod[self.dronesCreated] = reportPeriod;
-                self.avgReportPeriodCount[self.dronesCreated] = 1;
-            } else {
-                var oldProduct = self.avgReportPeriodCount[self.dronesCreated] * self.avgReportPeriod[self.dronesCreated];
-                var newProduct = oldProduct + reportPeriod;
-                self.avgReportPeriodCount[self.dronesCreated] += 1;
-                var newAvg = newProduct/self.avgReportPeriodCount[self.dronesCreated];
-                self.avgReportPeriod[self.dronesCreated] = newAvg;
-            }
+        if( self.report ){
+            self.report.addProfileData( reportPeriod, latency )
         }
     };
 
@@ -140,11 +117,59 @@ var SimEngine = function( params ){
                 headers: data.headers,
                 UUID: data.UUID,
                 engine: self,
-                protocol: config.protocol
+                protocol: config.protocol,
+                overlordHost: config.overlordHost
             })
         )
         return deferred.promise;
     }
+
+    self.reportDrone = function( count ){
+        // report that a drone was created to the overlord
+        var deferred = q.defer();
+        console.log( 'reporting drone' )
+        var payloadString = JSON.stringify({
+            "cnt": count,
+            "testname": params.testname
+        });
+
+        var options = {
+            host: params.overlordHost,
+            port: params.overlordPort,
+            path: params.reporterPath,
+            method: 'POST',
+            headers: {
+                "content-type": "application/json"
+            }
+        };
+        console.dir( options );
+        var req = http.request(options, function(res) {
+
+            res.setEncoding('utf-8');
+
+            var responseString = '';
+
+            res.on('data', function(data) {
+                responseString += data;                   
+            });
+
+            res.on('end', function() {
+                var resultObject = JSON.parse( responseString );
+                console.log('response: ');
+                console.dir( resultObject );
+                deferred.resolve();
+            });
+        });
+
+        req.on('error', function(e) {
+            console.log(e);
+        });
+
+        req.write( payloadString );
+
+        req.end();
+        return deferred.promise;
+    }  
 
     self.getCreds = function( friendlyName ){
         var deferred = q.defer();
@@ -174,10 +199,19 @@ var SimEngine = function( params ){
     } 
 
     self.batchLoop = function(){
-        self.pauseRecording();
+        if( self.shuttingDown === true ){
+            return;
+        }
+
+        if( self.report ){
+            self.report.send();
+            self.report = null;
+        }
+
         console.log('Loading Batch');
+        
         self.spinUpBatch( function() {
-            self.resumeRecording();
+            self.report = new report( params );
             console.log('Resuming Reporting');
             
             if( batchesCreated < config.numBatches ){
@@ -203,10 +237,16 @@ var SimEngine = function( params ){
     }        
 
     self.spinUpBatchLoop = function( batchDronesCreated, callback){
-        self.getCreds( config.engineName + (self.dronesCreated))
+        if( self.shuttingDown === true ){
+            return;
+        }
+        self.getCreds( config.engineName + (self.dronesCreated) )
             .then( self.logData )
             .then( self.spinUpDrone )
             .then( self.startDrone )
+            .then( function(){
+                    self.reportDrone( 1 )
+                } )
             .then( function(){
                 var deferred = q.defer();
                 self.dronesCreated += 1;
@@ -220,36 +260,41 @@ var SimEngine = function( params ){
                     callback();                    
                 }
                 return deferred.promise;   
-            })               
+            })           
             .done();
     }
 
     self.shutdown = function(){
         // stop, clean-up, destroy drones
-        self.stop( self.dumpReport );
+        self.stop( );
     }
     
     self.stop = function( callback ){
         console.log('shutting down');
+        self.shuttingDown = true;
         var callbackTrigger = 0;
         // stop making new drones
-        if( batchInterval ){
+/*        if( batchInterval ){
             clearInterval( batchInterval );
         }
         if( interval ){ 
             clearInterval( interval );
-        }
+        }*/
 
         // tell each drone to stop reporting
+
         for(var i=0;i<drones.length;i++){
             drones[i].stop();
             drones[i].destroy();
+            self.reportDrone( -1 );
             callbackTrigger +=1;
         }
 
         if( callbackTrigger >= drones.length ){
             self.user.delete();
-            callback();
+            if( callback ){
+                callback();
+            }
         }
     }
 }
